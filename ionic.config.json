@@ -1,0 +1,7 @@
+{
+  "name": "Anywhere",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
