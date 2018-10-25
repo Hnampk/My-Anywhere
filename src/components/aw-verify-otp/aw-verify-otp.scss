@@ -1,0 +1,46 @@
+aw-verify-otp {
+    .backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(black, .6);
+    }
+    .content-container {
+        width: 80%;
+        background-color: white;
+        padding: 20px;
+        border-radius: 20px;
+        .msg {
+            text-align: center;
+            font-size: .9em;
+            color: #464646;
+        }
+        .input-container {
+            padding: 16px 0;
+            input {
+                padding: 6px;
+                width: 100%;
+                background: #F8F8F8;
+                border: 1px solid lightgray;
+                text-align: center;
+            }
+        }
+        .buttons-container {
+            .verify-btn {
+                width: 60%;
+            }
+            .resend-btn {
+                border: none;
+                padding: 10px;
+                color: #47B1FF;
+                font-weight: bold;
+            }
+            .deactive-resend {
+                color: gray;
+            }
+        }
+    }
+}

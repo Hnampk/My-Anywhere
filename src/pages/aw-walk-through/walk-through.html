@@ -1,0 +1,28 @@
+<ion-content no-bounce>
+
+  <div class="a1-fill-parent background">
+    <ion-slides pager="true">
+      <ion-slide *ngFor="let slide of mDatas.slides; let i = index; let l = count">
+        <div class="m-slide">
+          <div class="icon-container a3-container-center">
+            <div>
+              <img [src]="slide.icon">
+            </div>
+          </div>
+          <div class="title-container a3-flex-1">
+            <!-- <div class="title">
+              <span>{{slide.title}}</span>
+            </div> -->
+            <h1>{{slide.title}}</h1>
+            <div class="sub-title">
+              <h6>{{slide.subTitle}}</h6>
+              <!-- <span>{{slide.subTitle}}</span> -->
+            </div>
+          </div>
+          <div class="next-btn" *ngIf="i==l-1" (click)="onClickNext()">{{mTexts.next | uppercase}}</div>
+        </div>
+      </ion-slide>
+    </ion-slides>
+  </div>
+
+</ion-content>

@@ -1,0 +1,21 @@
+<div class="backdrop a3-container-center" (click)="onClickBackdrop()">
+
+    <div class="content-container" (click)="onClickContainer()">
+        <div class="msg">
+            <div bold>{{ mTexts.message }}</div>
+            <div>({{ timestamp | date:'mediumTime' }})</div>
+        </div>
+        <div class="input-container">
+            <input type="text" [(ngModel)]="mDatas.otp">
+        </div>
+        <div class="buttons-container a3-container a3-justify-between">
+            <div class="blue-btn verify-btn" (click)="onClickVerify()">
+                <span>{{ mTexts.verify }}</span>
+            </div>
+            <div class="resend-btn a3-container-center" (click)="onClickResend()">
+                <span>{{ mTexts.resend }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>

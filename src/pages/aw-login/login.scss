@@ -1,0 +1,74 @@
+page-login {
+    .main-content {
+        background: linear-gradient(-135deg, white -30%, #47B1FF 40%);
+        .content-container {
+            width: 100%;
+            height: 80%;
+            background-image: url(../assets/imgs/background-login.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position-x: center;
+            position: absolute;
+            bottom: 0;
+            .icon {
+                margin-top: -6vw;
+                width: 12vw;
+                img {
+                    width: 100%;
+                }
+            }
+            .content {
+                width: 60vw;
+                padding-bottom: 40px;
+                .title {
+                    padding: 16px 0;
+                    font-size: 1.4em;
+                    color: #47B1FF;
+                    text-align: center;
+                    margin-bottom: 6vh;
+                }
+                .info {
+                    input {
+                        border: none;
+                        border-bottom: 1px solid #E6E6E6;
+                        margin-bottom: 10px;
+                        padding: 10px 0;
+                        width: 100%;
+                    }
+                    .error {
+                        border-bottom: 1px solid #FF87B4;
+                    }
+                    .valid{
+                        border-bottom: 1px solid #49de49 !important;
+                    }
+                }
+                .save-password {
+                    .save-checkbox {
+                        width: 2rem;
+                        height: 2rem;
+                        border-radius: 50%;
+                        border: 1px solid #D6D6D6;
+                        text-align: right;
+                        ion-icon {
+                            margin-right: -1px;
+                            color: #F34E88;
+                            font-size: .8em;
+                            width: 100%;
+                        }
+                    }
+                    .text {
+                        margin-left: 10px;
+                        font-size: .8em;
+                    }
+                }
+                .func-btn {
+                    padding: 10px;
+                    margin-top: 20px;
+                    border: 1px solid #D6D6D6;
+                    border-radius: 20px;
+                    color: #47B1FF;
+                }
+            }
+        }
+    }
+}

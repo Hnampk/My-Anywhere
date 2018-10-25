@@ -1,0 +1,34 @@
+<ion-content no-bounce>
+
+    <div class="main-content a1-fill-parent a1-relative">
+        <div class="content-container a3-container a3-items-center a3-column">
+            <div class="icon">
+                <img src="./assets/imgs/icon-login.png">
+            </div>
+            <div class="content">
+                <form [formGroup]="form">
+                    <div class="title">{{mTexts.logIn | uppercase}}</div>
+                    <div class="info">
+                        <input type="number" class="form-control" formControlName="phonenumber" [class.error]="phonenumber.touched && phonenumber.invalid" [class.valid]="phonenumber.touched && phonenumber.valid" placeholder="{{ mTexts.phonenumber }}">
+                        <input type="password" formControlName="password" [class.error]="password.touched && password.invalid" [class.valid]="password.touched && password.valid" placeholder="{{ mTexts.password }}">
+                    </div>
+                    <div class="save-password a1-margin-bottom a3-container a3-items-center a3-justify-end" (click)="onClickSavePassword()">
+                        <div class="save-checkbox">
+                            <ion-icon *ngIf="mDatas.isSavingPassword" name="aw-done-check"></ion-icon>
+                        </div>
+                        <div class="text ">{{mTexts.savePassword}}</div>
+                    </div>
+                    <div class="blue-btn" [class.white-btn]="form.invalid" style="margin-top: 24px" (click)="onClickLogin()">
+                        <span>{{mTexts.logIn | uppercase}}</span>
+                    </div>
+                    <div class="white-btn a1-margin-top" (click)="onClickSignUp()">
+                        <span>{{mTexts.signUp | uppercase}}</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

@@ -1,0 +1,33 @@
+<ion-content no-bounce>
+
+    <div class="main-content a1-fill-parent a1-relative">
+        <div class="content-container a3-container a3-items-center a3-column">
+            <div class="icon">
+                <img src="./assets/imgs/icon-login.png">
+            </div>
+            <div class="content">
+                <form [formGroup]="form">
+                    <div class="title">{{mTexts.create | uppercase}}</div>
+                    <div class="info ">
+                        <input type="number" class="form-control" formControlName="phonenumber" [class.error]="phonenumber.touched && phonenumber.invalid" [class.valid]="phonenumber.touched && phonenumber.valid" placeholder="{{ mTexts.phonenumber }}">
+                        <div formGroupName="passwordGroup">
+                            <input type="password" class="form-control" formControlName="password" [class.error]="password.touched && password.invalid" [class.valid]="password.touched && password.valid" placeholder="{{ mTexts.password }}">
+                            <input type="password" class="form-control" formControlName="confirm" [class.error]="confirm.touched && (confirm.invalid || passwordGroup.invalid)" [class.valid]="confirm.touched && passwordGroup.valid" placeholder="{{ mTexts.confirm }}">
+                        </div>
+                    </div>
+                    <div class="blue-btn" [class.white-btn]="form.invalid" style="margin-top: 30px" (click)="onClickSignUp()">
+                        <span>{{mTexts.signUp | uppercase}}</span>
+                    </div>
+                    <div class="white-btn a1-margin-top" (click)="onClickLogin()">
+                        <span>{{mTexts.logIn | uppercase}}</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>
+
+<aw-verify-otp *ngIf="mDatas.onVerifying" [timestamp]="mDatas.lastGetOtp" (cancel)="onCancelVerify()" (verify)="onVerify($event)" (resend)="onResend()"></aw-verify-otp>

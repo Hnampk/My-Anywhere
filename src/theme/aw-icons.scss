@@ -1,0 +1,72 @@
+@font-face {
+    font-family: 'icomoon';
+    src: url('../assets/fonts/icomoon.eot?fmiaa5');
+    src: url('../assets/fonts/icomoon.eot?fmiaa5#iefix') format('embedded-opentype'), url('../assets/fonts/icomoon.ttf?fmiaa5') format('truetype'), url('../assets/fonts/icomoon.woff?fmiaa5') format('woff'), url('../assets/fonts/icomoon.svg?fmiaa5#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"],
+[class*=" icon-"],
+[class^="ion-ios-icon"],
+[class*="ion-ios-icon"],
+[class^="ion-md-icon"],
+[class*="ion-md-icon"] {
+    @extend .ion !optional;
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin makeIcon($arg,
+$val) {
+    .bd69-#{$arg}:before,
+    .ion-ios-aw-#{$arg}:before,
+    .ion-ios-aw-#{$arg}-outline:before,
+    .ion-md-aw-#{$arg}:before,
+    .ion-md-aw-#{$arg}-outline:before {
+        content: $val;
+    }
+}
+
+@include makeIcon(camera,
+"\e900");
+@include makeIcon(send,
+"\e901");
+@include makeIcon(back,
+"\e902");
+@include makeIcon(route-connect,
+"\e903");
+@include makeIcon(route-point,
+"\e904");
+@include makeIcon(route-start,
+"\e905");
+@include makeIcon(done-check,
+"\e906");
+@include makeIcon(more,
+"\e907");
+@include makeIcon(menu,
+"\e908");
+@include makeIcon(refresh,
+"\e909");
+@include makeIcon(power,
+"\e90a");
+@include makeIcon(connected-lines,
+"\e90b");
+@include makeIcon(chat,
+"\e90c");
+@include makeIcon(settings,
+"\e914");
+@include makeIcon(faq,
+"\e915");
+@include makeIcon(guide,
+"\e916");
+@include makeIcon(circle-connect,
+"\e917");
