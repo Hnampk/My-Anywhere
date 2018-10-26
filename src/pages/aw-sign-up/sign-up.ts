@@ -1,3 +1,4 @@
+import { AuthenticationProvider } from './../../providers/authentication/authentication';
 // import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { AccountValidators } from './../../validators/account.validators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -40,6 +41,7 @@ export class SignUpPage {
   });
 
   constructor(public navCtrl: NavController,
+    private mAuthenticationProvider: AuthenticationProvider,
     // private mAwModule: AwModule,
     private mMenuController: MenuController,
     private mToastController: ToastController) {
@@ -75,7 +77,7 @@ export class SignUpPage {
   }
 
   onClickSignUp() {
-    // let phonenumber = "0" + this.form.value.phonenumber;
+    let phonenumber = "0" + this.form.value.phonenumber;
 
     // this.showLoading();
     // this.mAwModule.tryToSignUp().then(data => {
@@ -87,27 +89,30 @@ export class SignUpPage {
     // this.mAwModule.login("", "").then((data) => {
     //   console.log("data from signup", data);
 
-    //   if (this.form.valid) {
+    if (this.form.valid) {
 
-    //     if (this.isAvailableSendOtp()) {
-    //       this.sendOtpToUser(phonenumber);
-    //     }
-    //     else {
-    //       this.hideLoading();
-    //       this.showVerify();
-    //     }
-    //   }
-    //   else {
-    //     if (this.phonenumber.errors) {
-    //       this.showToast("Số điện thoại không hợp lệ");
-    //     }
-    //     else if (this.password.errors) {
-    //       this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
-    //     }
-    //     else if (this.passwordGroup.errors) {
-    //       this.showToast("Mật khẩu xác nhận không khớp");
-    //     }
-    //   }
+      let phonenumber = "0" + this.form.value.phonenumber;
+      let password = this.passwordGroup.value.password;
+      this.mAuthenticationProvider.signUp(phonenumber, password);
+      // if (this.isAvailableSendOtp()) {
+      //   this.sendOtpToUser(phonenumber);
+      // }
+      // else {
+      //   this.hideLoading();
+      //   this.showVerify();
+      // }
+    }
+    else {
+      if (this.phonenumber.errors) {
+        this.showToast("Số điện thoại không hợp lệ");
+      }
+      else if (this.password.errors) {
+        this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+      }
+      else if (this.passwordGroup.errors) {
+        this.showToast("Mật khẩu xác nhận không khớp");
+      }
+    }
     // });
   }
 

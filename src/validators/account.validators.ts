@@ -4,7 +4,7 @@ import { AbstractControl, ValidationErrors } from "@angular/forms";
 export class AccountValidators {
 
     static isValidPhoneNumber(controls: AbstractControl): ValidationErrors | null {
-        if (controls.value >= 800000000 && controls.value <= 1999999999)
+        if (controls.value >= 300000000 && controls.value <= 999999999)
             return null;
         else
             return { invalid: true }

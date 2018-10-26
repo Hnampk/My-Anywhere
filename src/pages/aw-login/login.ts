@@ -3,6 +3,7 @@ import { AccountValidators } from './../../validators/account.validators';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, ToastController, MenuController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AuthenticationProvider } from '../../providers/authentication/authentication';
 
 @IonicPage()
 @Component({
@@ -35,6 +36,7 @@ export class LoginPage {
 
   constructor(public navCtrl: NavController,
     // private mAwModule: AwModule,
+    private mAuthenticationProvider: AuthenticationProvider,
     private mToastController: ToastController,
     private mMenuController: MenuController) {
   }
@@ -76,13 +78,15 @@ export class LoginPage {
     this.mDatas.isSavingPassword = !this.mDatas.isSavingPassword;
   }
 
-  onClickLogin() {
-  //   if (this.form.valid) {
+  async onClickLogin() {
+    if (this.form.valid) {
   //     this.showLoading();
 
-  //     let phonenumber = "0" + this.form.value.phonenumber;
-  //     let password = this.form.value.password;
+      let phonenumber = "0" + this.form.value.phonenumber;
+      let password = this.form.value.password;
 
+      await this.mAuthenticationProvider.login(phonenumber, password);
+      this.navCtrl.push("HomePage");
   //     this.mAwModule.login(phonenumber, password).then((data) => {
   //       this.hideLoading();
 
@@ -105,6 +109,6 @@ export class LoginPage {
   //     else if (this.password.errors) {
   //       this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
   //     }
-  //   }
+    }
   }
 }
