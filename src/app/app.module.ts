@@ -4,11 +4,16 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Network } from '@ionic-native/network';
+import { GoogleMaps } from '@ionic-native/google-maps';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { MyApp } from './app.component';
-import { FormsModule } from '@angular/forms';
 import { AuthenticationProvider } from '../providers/authentication/authentication';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MapServices } from '../providers/map-services/map-services';
+import { UserController } from '../providers/user-controller/user-controller';
+import { AppController } from '../providers/app-controller/app-controller';
 
 @NgModule({
   declarations: [
@@ -27,9 +32,14 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
   providers: [
     StatusBar,
     SplashScreen,
+    Network,
+    GoogleMaps,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     AuthenticationProvider,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    MapServices,
+    UserController,
+    AppController,
   ]
 })
 export class AppModule { }

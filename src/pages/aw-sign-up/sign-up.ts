@@ -1,3 +1,4 @@
+import { AppController } from './../../providers/app-controller/app-controller';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
 // import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { AccountValidators } from './../../validators/account.validators';
@@ -42,7 +43,7 @@ export class SignUpPage {
 
   constructor(public navCtrl: NavController,
     private mAuthenticationProvider: AuthenticationProvider,
-    // private mAwModule: AwModule,
+    private mAppController: AppController,
     private mMenuController: MenuController,
     private mToastController: ToastController) {
   }
@@ -67,53 +68,34 @@ export class SignUpPage {
     return this.form.get("passwordGroup");
   }
 
-  showToast(message: string, duration?: number) {
-    let toast = this.mToastController.create({
-      message: message,
-      duration: duration ? duration : 2000
-    });
-
-    toast.present();
-  }
-
-  onClickSignUp() {
-    let phonenumber = "0" + this.form.value.phonenumber;
-
-    // this.showLoading();
-    // this.mAwModule.tryToSignUp().then(data => {
-    //   this.mAwModule.getOtp(phonenumber).then(data => {
-    //     console.log(data);
-    //   });
-    // });
-
-    // this.mAwModule.login("", "").then((data) => {
-    //   console.log("data from signup", data);
-
+  async onClickSignUp() {
     if (this.form.valid) {
+      this.showLoading();
 
       let phonenumber = "0" + this.form.value.phonenumber;
       let password = this.passwordGroup.value.password;
-      this.mAuthenticationProvider.signUp(phonenumber, password);
-      // if (this.isAvailableSendOtp()) {
-      //   this.sendOtpToUser(phonenumber);
-      // }
-      // else {
-      //   this.hideLoading();
-      //   this.showVerify();
-      // }
+
+      try {
+        await this.mAuthenticationProvider.signUp(phonenumber, password);
+        this.mAppController.showToast("Đăng ký thành công!")
+        this.navCtrl.setRoot("AddAddressPage");
+      }
+      catch (error) {
+        if (error) this.mAppController.showToast(error);
+      }
+      this.hideLoading();
     }
     else {
       if (this.phonenumber.errors) {
-        this.showToast("Số điện thoại không hợp lệ");
+        this.mAppController.showToast("Số điện thoại không hợp lệ");
       }
       else if (this.password.errors) {
-        this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+        this.mAppController.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
       }
       else if (this.passwordGroup.errors) {
-        this.showToast("Mật khẩu xác nhận không khớp");
+        this.mAppController.showToast("Mật khẩu xác nhận không khớp");
       }
     }
-    // });
   }
 
   isAvailableSendOtp() {
@@ -194,7 +176,7 @@ export class SignUpPage {
     if (this.isAvailableSendOtp())
       this.sendOtpToUser(phonenumber);
     else {
-      this.showToast("Thời gian tối thiểu là 60 giây");
+      this.mAppController.showToast("Thời gian tối thiểu là 60 giây");
     }
   }
 }

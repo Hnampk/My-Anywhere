@@ -1,0 +1,23 @@
+<ion-header>
+
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button icon-only (click)="onClickClose()">
+                <ion-icon name="ios-arrow-back-outline"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>search-address</ion-title>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content padding>
+    <div class="input-container">
+        <ion-input #addressInput clearInput="true" (ionChange)="inputChanged(addressInput)"></ion-input>
+    </div>
+    <ion-list class="a1-margin-top">
+        <ion-item *ngFor="let item of addressResult" (click)="onChooseItem(item)">
+            <span>{{item}}</span>
+        </ion-item>
+    </ion-list>
+</ion-content>

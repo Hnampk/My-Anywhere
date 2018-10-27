@@ -1,3 +1,4 @@
+import { AppController } from './../../providers/app-controller/app-controller';
 import { AccountValidators } from './../../validators/account.validators';
 // import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { Component } from '@angular/core';
@@ -35,7 +36,7 @@ export class LoginPage {
   });
 
   constructor(public navCtrl: NavController,
-    // private mAwModule: AwModule,
+    private mAppController: AppController,
     private mAuthenticationProvider: AuthenticationProvider,
     private mToastController: ToastController,
     private mMenuController: MenuController) {
@@ -61,14 +62,6 @@ export class LoginPage {
     this.mDatas.onLoading = false;
   }
 
-  showToast(message: string, duration?: number) {
-    let toast = this.mToastController.create({
-      message: message,
-      duration: duration ? duration : 2000
-    });
-
-    toast.present();
-  }
 
   onClickSignUp() {
     this.navCtrl.push("SignUpPage", null, { animation: 'ios-transition' });
@@ -80,35 +73,33 @@ export class LoginPage {
 
   async onClickLogin() {
     if (this.form.valid) {
-  //     this.showLoading();
+      this.showLoading();
 
       let phonenumber = "0" + this.form.value.phonenumber;
       let password = this.form.value.password;
 
-      await this.mAuthenticationProvider.login(phonenumber, password);
-      this.navCtrl.push("HomePage");
-  //     this.mAwModule.login(phonenumber, password).then((data) => {
-  //       this.hideLoading();
+      try {
+        await this.mAuthenticationProvider.login(phonenumber, password);
 
-  //       if (data['success']) {
-  //         this.navCtrl.setRoot("AwHomePage");
-  //       }
-
-  //       if (data['msg']) {
-  //         this.showToast(data['msg'])
-  //       }
-  //     }).catch(e => {
-  //       this.hideLoading();
-  //       this.showToast("Vui lòng kiểm tra kết nối mạng")
-  //     });
-  //   }
-  //   else {
-  //     if (this.phonenumber.errors) {
-  //       this.showToast("Số điện thoại không hợp lệ");
-  //     }
-  //     else if (this.password.errors) {
-  //       this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
-  //     }
+        if (!this.mAuthenticationProvider.hasAddress()) {
+          this.navCtrl.setRoot("AddAddressPage");
+        }
+        else {
+          this.navCtrl.setRoot("HomePage");
+        }
+      }
+      catch (error) {
+        if (error) this.mAppController.showToast(error);
+      }
+      this.hideLoading();
+    }
+    else {
+      if (this.phonenumber.errors) {
+        this.mAppController.showToast("Số điện thoại không hợp lệ");
+      }
+      else if (this.password.errors) {
+        this.mAppController.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+      }
     }
   }
 }

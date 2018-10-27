@@ -1,0 +1,42 @@
+<ion-header class="m-header aw-header">
+
+    <ion-toolbar>
+        <ion-buttons left [class.display-none]="mDatas.isSignUp">
+            <button ion-button icon-only (click)="onClickClose()">
+                <ion-icon name="ios-arrow-back-outline"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>{{mTexts.title}}</ion-title>
+    </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content no-bounce>
+
+    <div class="a1-fill-parent a3-container a3-column">
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+
+        <div id="map">
+            <div class="search-btn" (click)="onClickSearch()">
+                <span class="search-icon"><ion-icon name="ios-search-outline"></ion-icon></span>
+                <span>{{ mDatas.address ? mDatas.address : mTexts.search }}</span>
+            </div>
+
+            <div class="center-mark"></div>
+
+            <div class="map-btn my-location a3-container-center" (click)="onClickMyLocation()">
+                <img src="./assets/imgs/my-location.png">
+            </div>
+        </div>
+        <div class="rest a3-container-center a3-flex-1">
+            <div class="blue-btn next-btn" (click)="onClickNext()">
+                <span>{{ mTexts.next | uppercase }}</span>
+            </div>
+        </div>
+
+    </div>
+
+</ion-content>

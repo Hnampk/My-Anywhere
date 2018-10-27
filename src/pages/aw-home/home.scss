@@ -1,3 +1,221 @@
 page-home {
-
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    .main-content {
+        #map {
+            width: 100vw;
+            height: 60%;
+            background-color: lightgray;
+            position: relative;
+            .members-background {
+                width: 100%;
+                overflow: auto;
+                position: absolute;
+                background-color: #47B1FF;
+                height: 6em;
+                transition: all .4s;
+                .members-container {
+                    margin: 10px;
+                    .member {
+                        width: 5em;
+                        .avatar {
+                            width: 3.2em;
+                            height: 3.2em;
+                            padding: 4px;
+                            border-radius: 50%;
+                            margin-bottom: 4px;
+                            opacity: .7;
+                            img {
+                                border-radius: 50%;
+                            }
+                        }
+                        .is-actived {
+                            opacity: 1 !important;
+                            border: 2px solid rgba(white, .5);
+                        }
+                        .name {
+                            width: 100%;
+                            color: white;
+                            font-size: .8em;
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+            .hidden-members {
+                height: 0;
+            }
+        }
+        .rest {
+            box-shadow: 0px -1px 3px 0px lightgrey;
+            width: 100%;
+            position: relative;
+            background-color: #F5F5F5;
+            overflow: auto;
+            .item-container {
+                height: 80%;
+                overflow: auto;
+                background-color: white;
+                .item {
+                    border-bottom: 1px solid #F1F1F1;
+                    padding: 4px 20px 4px 10px;
+                    .avatar-container {
+                        padding: 4px;
+                        position: relative;
+                        img {
+                            width: 100%;
+                            border-radius: 50%;
+                            border: 2px solid #BEBEBE;
+                        }
+                        .status {
+                            position: absolute;
+                            bottom: 4px;
+                            right: 4px;
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            background-color: white;
+                            width: 1em;
+                            height: 1em;
+                        }
+                        .online {
+                            background-color: #38DC54 !important;
+                        }
+                        .offline {
+                            background-color: #EC4747;
+                        }
+                    }
+                    .info-container {
+                        padding-left: 10px;
+                        .name {
+                            padding: 0;
+                            color: #8D8D8D;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .time {
+                            padding: 0;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            font-style: italic;
+                            color: #47B1FF;
+                            text-align: right;
+                        }
+                        .location {
+                            color: #464646;
+                            font-weight: 500;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+            }
+            .route-container {
+                height: 80%;
+                overflow: auto;
+                background-color: white;
+                .step {
+                    padding-right: 20px;
+                    height: 50px;
+                    .icon-container {
+                        text-align: center;
+                        .route-connect-container {
+                            height: 100%;
+                            width: 100%;
+                            margin-top: -25px;
+                            .route-connect {
+                                height: calc(100% - 2rem);
+                                width: 1px;
+                                border: 1px dashed #8D8D8D;
+                            }
+                        }
+                        .icon-point {
+                            color: #47B1FF;
+                            font-size: 1.6rem;
+                            position: absolute;
+                            top: calc(50% - .8rem);
+                            left: calc(50% - .8rem);
+                        }
+                        .point {
+                            color: #F54E89 !important;
+                            font-size: 1rem;
+                            top: calc(50% - .5rem);
+                            left: calc(50% - .5rem);
+                        }
+                    }
+                    .info-container {
+                        .title {
+                            padding: 0;
+                            color: #8D8D8D;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .time {
+                            padding: 0;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            font-style: italic;
+                            color: #47B1FF;
+                            text-align: right;
+                        }
+                        .location {
+                            color: #464646;
+                            font-weight: 500;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+                .notice {
+                    text-align: center;
+                    font-size: 1.2em;
+                }
+            }
+            .btn-chat-container {
+                height: 20%;
+                width: 100%;
+                .chat-btn {
+                    width: 80%;
+                }
+                .title {
+                    font-size: .9em;
+                    margin: 0 10px;
+                    padding: 0 !important;
+                }
+                .msg-number {
+                    width: 1.6em;
+                    height: 1.6em;
+                    background-color: #F54D88;
+                    color: white;
+                    font-size: .8em;
+                    border-radius: 50%;
+                }
+                .date-picker-btn {
+                    width: 80%;
+                    padding: 10px;
+                    border-radius: 20px;
+                    background-color: white;
+                    border: 1px solid #707070;
+                }
+            }
+        }
+    }
+    .hidden {
+        display: none;
+    }
 }
