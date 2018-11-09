@@ -1,3 +1,4 @@
+import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { AccountValidators } from './../../validators/account.validators';
 // import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
@@ -38,6 +39,7 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
     private mAppController: AppController,
     private mAuthenticationProvider: AuthenticationProvider,
+    private mCircleController: CircleController,
     private mToastController: ToastController,
     private mMenuController: MenuController) {
   }
@@ -79,10 +81,14 @@ export class LoginPage {
       let password = this.form.value.password;
 
       try {
+        // login
         await this.mAuthenticationProvider.login(phonenumber, password);
+        // get circles from server
+        await this.mCircleController.getMyCircles();
 
+        this.mAppController.showToast("Đăng nhập thành công!");
         if (!this.mAuthenticationProvider.hasAddress()) {
-          this.navCtrl.setRoot("AddAddressPage");
+          this.navCtrl.setRoot("UpdateAddressPage");
         }
         else {
           this.navCtrl.setRoot("HomePage");
@@ -95,10 +101,10 @@ export class LoginPage {
     }
     else {
       if (this.phonenumber.errors) {
-        this.mAppController.showToast("Số điện thoại không hợp lệ");
+        this.mAppController.showToast("Số điện thoại không hợp lệ!");
       }
       else if (this.password.errors) {
-        this.mAppController.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+        this.mAppController.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự!");
       }
     }
   }

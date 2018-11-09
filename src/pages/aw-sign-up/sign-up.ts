@@ -78,7 +78,7 @@ export class SignUpPage {
       try {
         await this.mAuthenticationProvider.signUp(phonenumber, password);
         this.mAppController.showToast("Đăng ký thành công!")
-        this.navCtrl.setRoot("AddAddressPage");
+        this.navCtrl.setRoot("UpdateAddressPage");
       }
       catch (error) {
         if (error) this.mAppController.showToast(error);

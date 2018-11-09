@@ -15,10 +15,10 @@ import { UserController } from '../../providers/user-controller/user-controller'
 
 @IonicPage()
 @Component({
-  selector: 'page-add-address',
-  templateUrl: 'add-address.html',
+  selector: 'page-update-address',
+  templateUrl: 'update-address.html',
 })
-export class AddAddressPage {
+export class UpdateAddressPage {
 
   map: GoogleMap;
 
@@ -36,7 +36,7 @@ export class AddAddressPage {
   } = {
       address: "",
       location: null,
-      isSignUp: true
+      isSignUp: false
     }
 
   constructor(public navCtrl: NavController,
@@ -48,9 +48,13 @@ export class AddAddressPage {
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
     public navParams: NavParams) {
+    if (navParams.get('isSignUp')) {
+      this.mDatas.isSignUp = navParams.get('isSignUp');
+    }
     if (!statusBar.isVisible) {
       statusBar.show();
     }
+    console.log(navParams.get('isSignUp'))
   }
 
   ionViewDidEnter() {
@@ -153,19 +157,23 @@ export class AddAddressPage {
     }
 
     try {
-      await this.mUserController.updateAddress(userId, newAddress);
+      await this.mUserController.updateAddress( newAddress);
       let userInfo = await this.mUserController.getUserInfo(userId);
       console.log(userInfo);
       this.mUserController.getOwner().onResponseData(userInfo);
-      // this.navCtrl.push("AwCreateCirclePage", { isSignUp: true });
+      if(this.mDatas.isSignUp){
+        this.navCtrl.push("CreateCirclePage", { isSignUp: true }, { animation: 'ios-transition' });
+      }
       this.navCtrl.setRoot("HomePage");
 
     } 
     catch (error) {
 
     }
+  }
 
-
+  onClickClose() {
+    this.navCtrl.pop({ animation: 'ios-transition' });
   }
 
   onClickSearch() {

@@ -1,15 +1,9 @@
+import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, ActionSheetController } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-
-/**
- * Generated class for the HomePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -56,8 +50,9 @@ export class HomePage {
 
   constructor(public navCtrl: NavController,
     statusBar: StatusBar,
+    private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
-
+    private mCircleController: CircleController,
     private mMenuController: MenuController,
     private mActionSheetController: ActionSheetController,
     public navParams: NavParams) {
@@ -82,7 +77,7 @@ export class HomePage {
       buttons: [{
         text: "Tạo mới lộ trình/địa điểm",
         handler: () => {
-          this.navCtrl.push("AwCreateRoutePage");
+          this.navCtrl.push("AwCreateRoutePage", { animation: 'ios-transition' });
         }
       }, {
         text: this.mDatas.isOnDetail ? "Vị trí thành viên" : "Lộ trình thành viên",
@@ -122,7 +117,20 @@ export class HomePage {
 
     action.present();
   }
-  onClickTest(){
-    this.navCtrl.push("AddAddressPage");
+
+  onClickUpdateAddress(){
+    this.navCtrl.push("UpdateAddressPage", { animation: 'ios-transition' });
+  }
+
+  onClickGetCircles(){
+    this.mCircleController.getMyCircles();
+    // this.mCircleController.getCirclesByUserId("5bd467aedcc5a71c8c59bb6b");
+  }
+
+  async onClickTestLogin(){
+    // login
+    await this.mAuthenticationProvider.login("0377115027", "hoainam");
+    // get circles from server
+    await this.mCircleController.getMyCircles();
   }
 }

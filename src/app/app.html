@@ -1,8 +1,8 @@
 <ion-menu type="overlay" [content]="content">
         <ion-content no-bounce class="aw-menu">
             <div class="menu-header a3-container a3-column a3-items-center" (click)="onClickUserInfo()">
-                <div class="menu-avatar">
-                    <img [src]="menuDatas.avatar">
+                <div class="menu-avatar" [ngStyle]="{'background-image': 'url('+menuDatas.avatar+')'}">
+                    <!-- <img [src]="menuDatas.avatar"> -->
                 </div>
                 <div class="menu-username a3-container a3-items-center">
                     <span class="a1-text-ellipsis a1-width-100">{{menuDatas.username}}</span>

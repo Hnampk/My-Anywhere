@@ -1,3 +1,95 @@
 page-create-circle {
-
+    .m-header {
+        background: transparent;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+             ::after {
+                height: 0;
+            }
+        }
+    }
+    ion-content {
+        .content-container {
+            background-color: #F8F8F8;
+            overflow: hidden;
+            .progress-bar {
+                border: 1px solid lightgray;
+                width: 100%;
+                height: 8px;
+                background-color: white;
+                .progress {
+                    width: 67%;
+                    height: 100%;
+                    background-color: #47B1FF;
+                }
+            }
+            .input-container {
+                height: 75%;
+                width: 100%;
+                padding: 20px 34px 26px 34px;
+                overflow: auto;
+                .inner-title {
+                    text-align: center;
+                    margin-bottom: 10px;
+                    color: #8D8D8D;
+                    border-radius: 10px;
+                }
+                .name-container {
+                    background-color: white;
+                    padding: 20px 34px;
+                    border-radius: 20px;
+                    border: 1px solid lightgray;
+                    input {
+                        padding-left: 10px;
+                        width: 100%;
+                        border: 1px solid #D6D6D6;
+                        border-radius: 10px;
+                        padding: 6px 10px;
+                    }
+                }
+                .suggest-container {
+                    width: 100%;
+                    min-height: 70%;
+                    border-radius: 20px;
+                    padding: 20px 0;
+                    background-color: white;
+                    margin-top: 20px;
+                    border: 1px solid lightgray;
+                    .suggest {
+                        width: 100%;
+                        height: 100%;
+                        .suggest-item-container {
+                            .item {
+                                background-color: #F4F4F4;
+                                font-size: .9em;
+                                border-radius: 20px;
+                                padding: 8px;
+                                text-align: center;
+                                color: #8D8D8D;
+                            }
+                            .item:hover {
+                                background-color: #FF9CC0;
+                                color: white;
+                            }
+                        }
+                    }
+                }
+            }
+            .rest {
+                height: 25%;
+                .next-btn {
+                    padding: 10px 30vw;
+                }
+            }
+        }
+        .scroll-content {
+            padding: 0 !important;
+        }
+    }
+    .display-none {
+        display: none !important;
+    }
 }

@@ -14,6 +14,7 @@ import { AuthenticationProvider } from '../providers/authentication/authenticati
 import { MapServices } from '../providers/map-services/map-services';
 import { UserController } from '../providers/user-controller/user-controller';
 import { AppController } from '../providers/app-controller/app-controller';
+import { CircleController } from '../providers/circle-controller/circle-controller';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { AppController } from '../providers/app-controller/app-controller';
     MapServices,
     UserController,
     AppController,
+    CircleController,
   ]
 })
 export class AppModule { }

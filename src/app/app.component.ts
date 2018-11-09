@@ -1,5 +1,7 @@
+import { CircleController } from './../providers/circle-controller/circle-controller';
+import { UserController } from './../providers/user-controller/user-controller';
 import { Component } from '@angular/core';
-import { Platform, MenuController, App } from 'ionic-angular';
+import { Platform, MenuController, App, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -41,6 +43,9 @@ export class MyApp {
     statusBar: StatusBar,
     private menu: MenuController,
     private app: App,
+    private events: Events,
+    private mUserController: UserController,
+    private mCircleController: CircleController,
     splashScreen: SplashScreen) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -50,6 +55,20 @@ export class MyApp {
         statusBar.hide();
       }
       splashScreen.hide();
+
+      events.subscribe('user:updated', () => {
+        this.menuDatas.username = mUserController.getOwner().name;
+        this.menuDatas.avatar = mUserController.getOwner().avatar;
+
+        console.log('user:updated', this.menuDatas);
+      });
+
+      events.subscribe('circles:updated', ()=>{
+        this.menuDatas.circles = this.mCircleController.getCircles();
+
+        console.log('circles:updated', this.menuDatas);
+      });
+
     });
   }
 
@@ -63,12 +82,12 @@ export class MyApp {
   }
 
   private onClickUserInfo() {
-    // this.app.getRootNav().push("AwUserInfoPage");
+    this.app.getRootNav().push("UserInfoPage", { animation: 'ios' });
     this.menu.close();
   }
 
   private onClickAddCircle() {
-    // this.app.getRootNav().push("AwCreateCirclePage", { isSignUp: false });
+    this.app.getRootNav().push("CreateCirclePage", { 'isSignUp': false }, { animation: 'ios' });
     this.menu.close();
   }
 

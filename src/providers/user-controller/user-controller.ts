@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { map } from 'rxjs/operators';
+import { Events } from 'ionic-angular';
 
 @Injectable()
 export class UserController {
@@ -13,11 +14,16 @@ export class UserController {
   private owner: User;
 
   constructor(public http: HttpClient,
+    private events: Events,
     private mAppcontroller: AppController) { }
 
 
   getOwner() {
     return this.owner;
+  }
+
+  removeOwner() {
+    this.owner = null;
   }
 
   createOwner(id: string, phonenumber: string) {
@@ -39,7 +45,6 @@ export class UserController {
         }))
         .subscribe(response => {
           res(response);
-          console.log(response);
         }, error => {
           // console.log(error);
           rej();
@@ -51,7 +56,7 @@ export class UserController {
    * @param id UserId
    * @param address New address
    */
-  updateAddress(id: string, location: LocationBase) {
+  updateAddress(location: LocationBase) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -65,8 +70,11 @@ export class UserController {
         }
       }
 
-      this.http.patch(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + id, reqBody)
+      this.http.patch(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, reqBody)
         .subscribe(response => {
+          this.owner.address = location;
+          this.onUserUpdated();
+
           res();
         }, error => {
           console.log(error);
@@ -74,6 +82,30 @@ export class UserController {
           rej();
         });
     });
+  }
+
+  updateDisplayName(name: string) {
+    return new Promise((res, rej) => {
+      let reqBody = {
+        name: name
+      }
+
+      this.http.patch(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, reqBody)
+        .subscribe(response => {
+          this.owner.name = name;
+          this.onUserUpdated();
+
+          res();
+        }, error => {
+          console.log(error);
+          this.mAppcontroller.onConnectionFailure();
+          rej();
+        });
+    });
+  }
+
+  onUserUpdated() {
+    this.events.publish("user:updated");
   }
 
 }

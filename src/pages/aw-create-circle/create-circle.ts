@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the CreateCirclePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { CircleController } from '../../providers/circle-controller/circle-controller';
 
 @IonicPage()
 @Component({
@@ -15,11 +9,49 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class CreateCirclePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  mTexts = {
+    title: "Tạo vòng kết nối của bạn",
+    nameTitle: "Tên vòng kết nối",
+    inputHolder: "Chưa nhập tên",
+    suggestTitle: "Chọn nhanh",
+    suggests: ["Gia đình", "Người ấy", "Bạn bè", "Cơ quan", "Du lịch", "Vui chơi"],
+    start: "Bắt đầu sử dụng"
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad CreateCirclePage');
+  mDatas = {
+    circleName: "",
+    isSignUp: false,
+    onLoading: false
   }
 
+  constructor(public navCtrl: NavController,
+    public mCircleController: CircleController,
+    public navParams: NavParams) {
+    if (navParams.get('isSignUp')) {
+      this.mDatas.isSignUp = navParams.get('isSignUp');
+    }
+  }
+
+  onClickSuggestItem(item) {
+    this.mDatas.circleName = item;
+  }
+
+  async onClickNext() {
+    this.showLoading();
+    await this.mCircleController.createCircle(this.mDatas.circleName);
+    this.hideLoading();
+    this.navCtrl.setRoot("HomePage");
+  }
+  
+  onClickClose(){
+    this.navCtrl.pop({ animation: 'ios-transition' });
+  }
+
+  showLoading() {
+    this.mDatas.onLoading = true;
+  }
+
+  hideLoading() {
+    this.mDatas.onLoading = false;
+  }
 }

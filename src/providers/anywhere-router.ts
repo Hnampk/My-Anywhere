@@ -1,6 +1,6 @@
 export class AnywhereRouter{
-    public static SERVICE_URL: string = "http://168.63.254.198:8080/api";
-    // public static SERVICE_URL: string = "http://localhost:8080/api";
+    // public static SERVICE_URL: string = "http://168.63.254.198:8080/api";
+    public static SERVICE_URL: string = "http://localhost:8080/api";
 
     // Authentication
     public static LOGIN: string = "/users/login/";
@@ -10,4 +10,7 @@ export class AnywhereRouter{
     public static USER: string = "/users/";
     public static UPDATE_USERINFO: string = "/users/update/"
 
+    // Circle
+    public static CREATE_CIRCLE: string = "/circles/create/"
+    public static GET_CIRCLES_BY_USER_ID: string = "/circles/by_user_id/"
 }

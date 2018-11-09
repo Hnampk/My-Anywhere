@@ -1,3 +1,4 @@
+import { CircleController } from './../circle-controller/circle-controller';
 import { UserController } from './../user-controller/user-controller';
 import { AppController } from './../app-controller/app-controller';
 import { AnywhereRouter } from './../anywhere-router';
@@ -15,7 +16,8 @@ export class AuthenticationProvider {
   private token: string;
 
   constructor(public http: HttpClient,
-    public mUserController: UserController,
+    private mUserController: UserController,
+    private mCircleController: CircleController,
     public mAppcontroller: AppController
   ) { }
 
@@ -36,24 +38,31 @@ export class AuthenticationProvider {
 
       let encodedPassword = this.encodePassword(password);
       let account: Account = { phonenumber: phonenumber, password: encodedPassword };
-
-      this.http.post(this.serviceUrl + AnywhereRouter.SIGN_UP, account, { headers: { 'Content-Type': 'application/json' } })
+      this.http.post(this.serviceUrl + AnywhereRouter.SIGN_UP, account)
         .pipe(map((result) => {
           return {
             id: result["info"]._id,
             phonenumber: result["info"].phonenumber,
+            token: result["token"]
           }
         }))
         .subscribe(response => {
+          console.log(response);
+
+          this.token = response.token;
           this.mUserController.createOwner(response.id, response.phonenumber);
 
+          this.mUserController.onUserUpdated();
           res();
         }, (error) => {
+          console.log(error);
           if (error.error.error && error.error.error.message) {
             // mongoose autogenerate unique error
             rej("Signup failed!")
           }
-          this.mAppcontroller.onConnectionFailure();
+          else {
+            this.mAppcontroller.onConnectionFailure();
+          }
           rej();
         });
     });
@@ -69,37 +78,50 @@ export class AuthenticationProvider {
       let encodedPassword = this.encodePassword(password);
       let account: Account = { phonenumber: phonenumber, password: encodedPassword };
 
-      this.http.post<{ token: string, info: any }>(this.serviceUrl + AnywhereRouter.LOGIN, account, { headers: { 'Content-Type': 'application/json' } })
+      this.http.post<{ token: string, info: any }>(this.serviceUrl + AnywhereRouter.LOGIN, account)
         .pipe(map((loginData) => {
-          console.log(loginData);
-
           return {
             token: loginData.token,
             id: loginData.info._id,
             phonenumber: loginData.info.phonenumber,
-            address: loginData.info.address
+            address: loginData.info.address,
+            name: loginData.info.name,
+            avatar: loginData.info.avatar
           }
         }))
         .subscribe(response => {
           this.token = response.token;
+          // update user info
           this.mUserController.createOwner(response.id, response.phonenumber);
           this.mUserController.getOwner().onResponseData(response);
 
           console.log(this.mUserController.getOwner());
+          this.mUserController.onUserUpdated();
 
           res();
         }, (error) => {
           if (error.error.message) {
             rej(this.errorConverter(error));
           }
-          this.mAppcontroller.onConnectionFailure();
+          else {
+            this.mAppcontroller.onConnectionFailure();
+          }
           rej();
         });
     });
   }
 
   logout() {
+    return new Promise((res, rej)=>{
+      // clear token
+      this.token = "";
+      // remove owner
+      this.mUserController.removeOwner();
+      // clear circles
+      this.mCircleController.clearCircles();
 
+      res();
+    });
   }
 
 
