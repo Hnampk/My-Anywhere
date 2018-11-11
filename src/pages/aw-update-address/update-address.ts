@@ -26,6 +26,7 @@ export class UpdateAddressPage {
     title: "Chọn vị trí nhà bạn",
     search: "Tìm kiếm",
     next: "Tiếp theo",
+    save: "Lưu lại",
     addStepTitle: "Chọn"
   }
 
@@ -48,13 +49,17 @@ export class UpdateAddressPage {
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
     public navParams: NavParams) {
-    if (navParams.get('isSignUp')) {
+    if (navParams.get('isSignUp') !== undefined) {
       this.mDatas.isSignUp = navParams.get('isSignUp');
+      this.mDatas.address = this.mUserController.getOwner().address.address;
+      this.mDatas.location = {
+        lat: this.mUserController.getOwner().address.lat,
+        lng: this.mUserController.getOwner().address.lng
+      };
     }
     if (!statusBar.isVisible) {
       statusBar.show();
     }
-    console.log(navParams.get('isSignUp'))
   }
 
   ionViewDidEnter() {
@@ -157,16 +162,16 @@ export class UpdateAddressPage {
     }
 
     try {
-      await this.mUserController.updateAddress( newAddress);
+      await this.mUserController.updateAddress(newAddress);
       let userInfo = await this.mUserController.getUserInfo(userId);
       console.log(userInfo);
       this.mUserController.getOwner().onResponseData(userInfo);
-      if(this.mDatas.isSignUp){
+      if (this.mDatas.isSignUp) {
         this.navCtrl.push("CreateCirclePage", { isSignUp: true }, { animation: 'ios-transition' });
       }
       this.navCtrl.setRoot("HomePage");
 
-    } 
+    }
     catch (error) {
 
     }

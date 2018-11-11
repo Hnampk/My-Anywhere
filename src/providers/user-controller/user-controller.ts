@@ -2,7 +2,7 @@ import { User } from './../models/user';
 import { AppController } from './../app-controller/app-controller';
 import { LocationBase } from './../models/location-base';
 import { AnywhereRouter } from './../anywhere-router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { map } from 'rxjs/operators';
@@ -11,12 +11,14 @@ import { Events } from 'ionic-angular';
 @Injectable()
 export class UserController {
   private serviceUrl = AnywhereRouter.SERVICE_URL;
+  /**
+   * The user who logged in on this device
+   */
   private owner: User;
 
   constructor(public http: HttpClient,
     private events: Events,
     private mAppcontroller: AppController) { }
-
 
   getOwner() {
     return this.owner;
@@ -31,6 +33,7 @@ export class UserController {
   }
 
   /**
+   * Get user's info from Server
    * @param id UserId
    */
   getUserInfo(id: string) {
@@ -53,8 +56,8 @@ export class UserController {
   }
 
   /**
-   * @param id UserId
-   * @param address New address
+   * Update user's info: Home Address
+   * @param location 
    */
   updateAddress(location: LocationBase) {
     return new Promise((res, rej) => {
@@ -84,6 +87,10 @@ export class UserController {
     });
   }
 
+  /**
+   * Update user's info: Display name
+   * @param name 
+   */
   updateDisplayName(name: string) {
     return new Promise((res, rej) => {
       let reqBody = {
@@ -104,6 +111,31 @@ export class UserController {
     });
   }
 
+  updateUserInfo(name: string, avatarImage: File) {
+    let userData = new FormData();
+
+    userData.append('name', name);
+    userData.append('image', avatarImage, this.owner.phonenumber);
+    console.log("dcmmm", userData.get("name"))
+    console.log("dcmmm", userData.get("image"))
+
+    
+
+    // let testHeader = new HttpHeaders();
+    // testHeader.append('Access-Control-Allow-Origin', 'http://localhost:8100');
+    
+    this.http.post(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO, userData)
+      .subscribe(response => {
+        console.log(response);
+      }, error => {
+        console.log(error);
+      })
+  }
+
+  /**
+   * Emit "user:updated" event
+   * => Update Menu
+   */
   onUserUpdated() {
     this.events.publish("user:updated");
   }

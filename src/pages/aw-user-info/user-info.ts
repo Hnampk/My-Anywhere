@@ -23,12 +23,14 @@ export class UserInfoPage {
     user: User,
     isShowCodes: boolean,
     onLoading: boolean,
-    isGettingNewCode: boolean
+    isGettingNewCode: boolean,
+    modified: boolean
   } = {
       user: null,
       isShowCodes: false,
       onLoading: false,
-      isGettingNewCode: false
+      isGettingNewCode: false,
+      modified: false
     }
 
 
@@ -53,7 +55,10 @@ export class UserInfoPage {
     this.mDatas.onLoading = false;
   }
 
-  onClickClose() {
+  async onClickClose() {
+    if(this.mDatas.modified){
+      await this.onModification();
+    }
     this.navCtrl.pop({ animation: 'ios-transition' });
   }
 
@@ -95,10 +100,10 @@ export class UserInfoPage {
     this.showLoading();
 
     this.mAuthentication.logout()
-      .then(()=>{
+      .then(() => {
         setTimeout(() => {
           this.hideLoading();
-  
+
           this.mAppController.showToast("Logged out!");
           this.navCtrl.setRoot("LoginPage");
         }, 2000);
@@ -124,12 +129,10 @@ export class UserInfoPage {
           }
         },
         {
-          text: 'Save',
+          text: 'OK',
           handler: async data => {
-            this.showLoading();
-            await this.mUserController.updateDisplayName(data['name']);
-            this.updateOwnerData();
-            this.hideLoading();
+            this.mDatas.modified = true;
+            this.mDatas.user.name = data['name'];
           }
         }
       ]
@@ -147,5 +150,52 @@ export class UserInfoPage {
 
   updateOwnerData() {
     this.mDatas.user = this.mUserController.getOwner();
+  }
+
+  onClickSave() {
+    this.onModification();
+  }
+
+  onModification() {
+    return new Promise((res, rej) => {
+      const confirm = this.mAlertController.create({
+        title: 'Confirm',
+        message: "Do you want to save your changes?",
+        buttons: [
+          {
+            text: 'Cancel',
+            handler: data => {
+              res();
+            }
+          },
+          {
+            text: 'Save',
+            handler: async data => {
+              this.showLoading();
+              await this.mUserController.updateDisplayName(this.mDatas.user.name);
+
+              this.updateOwnerData();
+              this.mDatas.modified = false;
+              this.hideLoading();
+              res();
+            }
+          }
+        ]
+      });
+      confirm.present();
+    })
+  }
+
+  onImageChanged(event) {
+    let file = (event.target as HTMLInputElement).files[0];
+
+    let reader = new FileReader();
+    reader.onload = () => {
+      this.mDatas.modified = true;
+      this.mDatas.user.avatar = reader.result as string;
+    }
+    console.log(file)
+    if (file)
+      reader.readAsDataURL(file);
   }
 }

@@ -15,12 +15,20 @@ export class Circle {
         return this._id;
     }
 
+    getMembers(){
+        return this.members;
+    }
+
+    clearMembers(){
+        this.members = [];
+    }
+
     /**
      * Update data for circle
      * @param data : {admin_id, members, name}
      */
     onResponseData(data){
-        console.log(data);
+        // console.log(data);
 
         if(data.name){
             this.name = data.name;

@@ -9,6 +9,11 @@
     <ion-title (click)="onClickTitle()">
       {{ mTexts.title }}
     </ion-title>
+    <ion-buttons right [class.hidden]="!mDatas.modified">
+      <button ion-button (click)="onClickSave()">
+        <ion-icon style="font-size: 3em; color: #47B1FF" name="ios-checkmark-outline"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-toolbar>
 
 </ion-header>
@@ -16,7 +21,8 @@
 <ion-content no-bounce>
 
   <div class="avatar-container a3-container a3-items-center">
-    <div class="avatar" *ngIf="mDatas.user" [ngStyle]="{'background-image': 'url('+mDatas.user?.avatar+')'}"> </div>
+    <div class="avatar" *ngIf="mDatas.user" [ngStyle]="{'background-image': 'url('+mDatas.user?.avatar+')'}" (click)="filePicker.click()"> </div>
+    <input type="file" class="hidden" accept="image/x-png,image/jpeg, image/jpg" #filePicker (change)="onImageChanged($event)">
   </div>
   <div class="user-info a3-container a3-column a3-items-center">
     <div class="username" (click)="onClickRename()">

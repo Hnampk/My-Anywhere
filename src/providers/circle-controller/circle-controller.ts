@@ -11,18 +11,24 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class CircleController {
   private serviceUrl = AnywhereRouter.SERVICE_URL;
-  private circles = [];
-
+  /**
+   * Locally store all the Circles of User
+   */
+  private circles: Array<Circle> = [];
 
   constructor(public http: HttpClient,
     private mUserController: UserController,
     private events: Events
   ) { }
 
-  clearCircles(){
+  clearCircles() {
     this.circles = [];
   }
 
+  /**
+   * Make request to create new Circle
+   * @param name 
+   */
   createCircle(name: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
@@ -37,9 +43,11 @@ export class CircleController {
       // send request to create new circle
       this.http.post<{ info: any }>(this.serviceUrl + AnywhereRouter.CREATE_CIRCLE, newCircle)
         .subscribe(response => {
-          this.fetchNewCircle(response.info)
+          this.addNewCircle(response.info)
           this.onCirclesUpdated();
           res();
+        }, error => {
+          rej(error);
         });
     })
   }
@@ -48,10 +56,12 @@ export class CircleController {
     return this.circles;
   }
 
+  /**
+   * Get all circles of User
+   * This will call getCirclesByUserId() function with current User's id
+   */
   getMyCircles() {
     return new Promise((res, rej) => {
-      console.log(this.mUserController.getOwner().id);
-
       this.getCirclesByUserId(this.mUserController.getOwner().id)
         .then(() => {
           res();
@@ -63,7 +73,7 @@ export class CircleController {
    * Get Circles From Server, By User Id
    * @param userId 
    */
-  getCirclesByUserId(userId: string) {
+  private getCirclesByUserId(userId: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -71,16 +81,35 @@ export class CircleController {
 
       this.http.get<{ circles: Array<any> }>(this.serviceUrl + AnywhereRouter.GET_CIRCLES_BY_USER_ID + userId)
         .subscribe(response => {
-          console.log(response);
           // merge circles
           this.circles = [];
 
           response.circles.forEach(element => {
-            this.fetchNewCircle(element);
+            this.addNewCircle(element);
           });
           this.onCirclesUpdated();
           res();
           // console.log(this.circles);
+        }, error => {
+          rej(error);
+        });
+    });
+  }
+
+  getCircleById(circleId: string) {
+    return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
+
+      this.http.get<{ circle: any }>(this.serviceUrl + AnywhereRouter.GET_CIRCLE_BY_ID + circleId)
+        .subscribe(async response => {
+          let resultCircle = <Circle>await this.updateCircle(response.circle);
+
+          res(resultCircle);
+        }, error => {
+          console.log(error);
+          rej(error);
         });
     });
   }
@@ -89,27 +118,47 @@ export class CircleController {
    * add circle to local variable
    * @param circleData 
    */
-  fetchNewCircle(circleData) {
+  private addNewCircle(circleData) {
     // update circle info
     let circle = new Circle(circleData._id);
     circle.onResponseData(circleData);
 
-    // update circle's members
-    circleData.members.forEach((memberId: string) => {
-      this.mUserController.getUserInfo(memberId)
-        .then(userInfo => {
-          // update member info
-          let member = new User(memberId, userInfo['phonenumber']);
-          member.onResponseData(userInfo);
-
-          circle.addMember(member);
-        });
-    });
-
     this.circles.push(circle);
   }
 
-  onCirclesUpdated() {
+  private updateCircle(circleData) {
+    return new Promise((res, rej) => {
+      for (let i = 0; i < this.circles.length; i++) {
+        if (this.circles[i].id == circleData._id) {
+          let circle = this.circles[i];
+
+          circle.onResponseData(circleData);
+          circle.clearMembers();
+
+          // update circle's members
+          circleData.members.forEach((memberId: string) => {
+            this.mUserController.getUserInfo(memberId)
+              .then(userInfo => {
+                // update member info
+                let member = new User(memberId, userInfo['phonenumber']);
+                member.onResponseData(userInfo);
+
+                circle.addMember(member);
+              });
+          });
+
+          res(circle);
+        }
+      }
+    });
+
+  }
+
+  /**
+   * Emit "circles:updated" event
+   * => Update Menu
+   */
+  private onCirclesUpdated() {
     this.events.publish("circles:updated");
   }
 

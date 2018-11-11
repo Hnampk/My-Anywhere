@@ -19,9 +19,14 @@
 
 </ion-header>
 
-
 <ion-content padding>
-  <button ion-button full (click)="onClickTestLogin()">Test Login</button>
-  <button ion-button full (click)="onClickUpdateAddress()">Update Address</button>
-  <button ion-button full (click)="onClickGetCircles()">Get My Circles</button>
+    <div>
+      <button ion-button (click)="filePicker.click()"></button>
+      <input type="file" accept="image/x-png,image/jpeg" #filePicker (change)="onImageChanged($event)">
+      <img [src]="imageUrl">
+    </div>
+    <button ion-button (click)="onClickSave()">Test Save</button>
+    <div *ngFor="let member of mDatas.circleMembers">{{ member.name }}</div>
 </ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

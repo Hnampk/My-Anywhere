@@ -28,7 +28,7 @@ page-user-info {
     }
     .user-info {
         width: 100%;
-        height: 40%;
+        // height: 40%;
         background-image: url(../assets/imgs/background-login.png);
         background-repeat: no-repeat;
         background-size: cover;
@@ -57,6 +57,7 @@ page-user-info {
         }
         .rest {
             .buttons-container {
+                margin: 20px 0 40px 0;
                 .btn {
                     border-radius: 50%;
                     font-size: 1.4em;
@@ -112,5 +113,10 @@ page-user-info {
                 }
             }
         }
+    }
+    .hidden{
+        visibility: hidden;
+        width: 0;
+        height: 0;
     }
 }

@@ -1,3 +1,4 @@
+import { Circle } from './../providers/models/circle';
 import { CircleController } from './../providers/circle-controller/circle-controller';
 import { UserController } from './../providers/user-controller/user-controller';
 import { Component } from '@angular/core';
@@ -51,7 +52,7 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      if(statusBar.isVisible){
+      if (statusBar.isVisible) {
         statusBar.hide();
       }
       splashScreen.hide();
@@ -63,9 +64,15 @@ export class MyApp {
         console.log('user:updated', this.menuDatas);
       });
 
-      events.subscribe('circles:updated', ()=>{
+      events.subscribe('circles:updated', () => {
         this.menuDatas.circles = this.mCircleController.getCircles();
 
+        this.menuDatas.currentCircleId = this.menuDatas.circles[0].id;
+        
+        // emit event
+        setTimeout(() => {
+          this.onShowCircle(this.menuDatas.circles[0]);
+        }, 1000);
         console.log('circles:updated', this.menuDatas);
       });
 
@@ -94,6 +101,23 @@ export class MyApp {
   private onClickJoinCircle() {
     // this.app.getRootNav().push("AwJoinCirclePage");
     this.menu.close();
+  }
+
+  private onClickCircle(circle: Circle) {
+    // update current circle id
+    this.menuDatas.currentCircleId = circle.id;
+
+    // emit event
+    this.onShowCircle(circle);
+    this.menu.close();
+  }
+
+  /**
+   * Emit "circles:show" event
+   * @param circle 
+   */
+  private onShowCircle(circle: Circle) {
+    this.events.publish("circles:show", { circle });
   }
 }
 

@@ -33,7 +33,7 @@
       </div>
       <div class="rest a3-container-center a3-flex-1">
           <div class="blue-btn next-btn" (click)="onClickNext()">
-              <span>{{ mTexts.next | uppercase }}</span>
+              <span>{{ mDatas.isSignUp?mTexts.next:mTexts.save | uppercase }}</span>
           </div>
       </div>
 

@@ -1,9 +1,11 @@
+import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, ActionSheetController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, ActionSheetController, Events } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
+import { User } from '../../providers/models/user';
 
 @IonicPage()
 @Component({
@@ -23,7 +25,7 @@ export class HomePage {
   mDatas: {
     circleId: string,
     circleName: string,
-    // circleMembers: Array<Member>,
+    circleMembers: Array<User>,
     circleNewMessages: number,
     isOnDetail: boolean,
     // memberDetail: Member,
@@ -36,7 +38,7 @@ export class HomePage {
   } = {
       circleId: "",
       circleName: "",
-      // circleMembers: [],
+      circleMembers: [],
       circleNewMessages: 0,
       isOnDetail: false,
       // memberDetail: null,
@@ -50,15 +52,30 @@ export class HomePage {
 
   constructor(public navCtrl: NavController,
     statusBar: StatusBar,
+    private events: Events,
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
     private mCircleController: CircleController,
     private mMenuController: MenuController,
     private mActionSheetController: ActionSheetController,
     public navParams: NavParams) {
-      if(!statusBar.isVisible){
-        statusBar.show();
-      }
+    events.subscribe("circles:show", data => {
+      let circle: Circle = data.circle;
+
+      console.log("Show Circle: ", circle);
+      this.showLoading();
+
+      this.mCircleController.getCircleById(circle.id)
+        .then((circle: Circle) => {
+          this.onUpdateCircleData(circle);
+
+          this.hideLoading();
+        });
+    });
+
+    if (!statusBar.isVisible) {
+      statusBar.show();
+    }
   }
 
   ionViewDidLoad() {
@@ -66,8 +83,25 @@ export class HomePage {
     this.mMenuController.enable(true);
   }
 
+  async ionViewDidEnter() {
+    // REMOVE THIS, for test
+    {
+      // login
+      await this.mAuthenticationProvider.login("0377115027", "hoainam");
+      // get circles from server
+      await this.mCircleController.getMyCircles();
+    }
+  }
+
+  showLoading() {
+    this.mDatas.onLoading = true;
+  }
+
+  hideLoading() {
+    this.mDatas.onLoading = false;
+  }
+
   onClickMenu() {
-    console.log("onClickMenu")
     this.mMenuController.open();
   }
 
@@ -118,19 +152,32 @@ export class HomePage {
     action.present();
   }
 
-  onClickUpdateAddress(){
-    this.navCtrl.push("UpdateAddressPage", { animation: 'ios-transition' });
+  onUpdateCircleData(circle: Circle) {
+    console.log(circle)
+    this.mDatas.circleId = circle.id;
+    this.mDatas.circleName = circle.name;
+    this.mDatas.circleMembers = circle.getMembers();
   }
 
-  onClickGetCircles(){
-    this.mCircleController.getMyCircles();
-    // this.mCircleController.getCirclesByUserId("5bd467aedcc5a71c8c59bb6b");
+
+
+  imageUrl;
+  file
+  onImageChanged(event) {
+    this.file = (event.target as HTMLInputElement).files[0];
+
+    let reader = new FileReader();
+    reader.onload = () => {
+      this.imageUrl = reader.result;
+      console.log("imageUrl", this.imageUrl);
+    }
+    console.log(this.file)
+    console.log(this.imageUrl)
+    if (this.file)
+      reader.readAsDataURL(this.file);
   }
 
-  async onClickTestLogin(){
-    // login
-    await this.mAuthenticationProvider.login("0377115027", "hoainam");
-    // get circles from server
-    await this.mCircleController.getMyCircles();
+  onClickSave() {
+    this.mUserController.updateUserInfo("aaaaa", this.file);
   }
 }

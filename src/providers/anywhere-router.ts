@@ -7,10 +7,11 @@ export class AnywhereRouter{
     public static SIGN_UP: string = "/users/sign_up/";
 
     // User
-    public static USER: string = "/users/";
-    public static UPDATE_USERINFO: string = "/users/update/"
+    public static USER: string = "/users/"; //:id
+    public static UPDATE_USERINFO: string = "/users/update/"; //:id
 
     // Circle
-    public static CREATE_CIRCLE: string = "/circles/create/"
-    public static GET_CIRCLES_BY_USER_ID: string = "/circles/by_user_id/"
+    public static CREATE_CIRCLE: string = "/circles/create/";
+    public static GET_CIRCLES_BY_USER_ID: string = "/circles/by_user_id/"; //:id
+    public static GET_CIRCLE_BY_ID: string = "/circles/" //:id
 }
