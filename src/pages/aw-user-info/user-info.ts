@@ -2,6 +2,7 @@ import { AppController } from './../../providers/app-controller/app-controller';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
 import { UserController } from './../../providers/user-controller/user-controller';
 import { Component } from '@angular/core';
+import { Clipboard } from '@ionic-native/clipboard';
 import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { User } from '../../providers/models/user';
 
@@ -16,6 +17,7 @@ export class UserInfoPage {
     title: "Thông tin người dùng",
     getCode: "Lấy mã chia sẻ",
     signOut: "Đăng xuất",
+    staticCode: "Mã chia sẻ",
     dynamicCode: "Mã tạm thời"
   }
 
@@ -37,7 +39,7 @@ export class UserInfoPage {
 
 
   constructor(public navCtrl: NavController,
-    // private mClipboard: Clipboard,
+    private mClipboard: Clipboard,
     private mAuthentication: AuthenticationProvider,
     private mAppController: AppController,
     private mUserController: UserController,
@@ -73,9 +75,9 @@ export class UserInfoPage {
   }
 
   onClickStaticCode() {
-    // this.mClipboard.copy(this.staticCode).then(() => {
-    //   this.showToast("Lưu vào Clipboard: " + this.staticCode, 1000);
-    // });
+    this.mClipboard.copy(this.mDatas.user.staticCode).then(() => {
+      this.mAppController.showToast("Lưu vào Clipboard: " + this.mDatas.user.staticCode, 1000);
+    });
   }
 
   onClickDynamicCode() {
@@ -152,6 +154,7 @@ export class UserInfoPage {
 
   updateOwnerData() {
     this.mDatas.user = this.mUserController.getOwner();
+    console.log(this.mDatas.user);
   }
 
   onClickSave() {

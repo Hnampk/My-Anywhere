@@ -9,6 +9,9 @@ export class AnywhereRouter{
     // User
     public static USER: string = "/users/"; //:id
     public static UPDATE_USERINFO: string = "/users/update/"; //:id
+    public static FIND_USER_BY_PHONENUMBER: string = "/users/by_phonenumber/"; //:phonenumber
+    public static FIND_USER_BY_STATIC_CODE: string = "/users/by_static_code/"; //:static_code
+
 
     // Circle
     public static CREATE_CIRCLE: string = "/circles/create/";

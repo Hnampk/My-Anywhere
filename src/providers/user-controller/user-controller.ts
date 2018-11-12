@@ -36,7 +36,7 @@ export class UserController {
    * Get user's info from Server
    * @param id UserId
    */
-  getUserInfo(id: string) {
+  getUserInfoById(id: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -50,6 +50,51 @@ export class UserController {
           res(response);
         }, error => {
           // console.log(error);
+          rej();
+        });
+    });
+  }
+
+  /**
+   * Get user's info from Server
+   * @param id UserId
+   */
+  findUserByPhonenumber(phonenumber: string) {
+    return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
+
+      this.http.get<{ message: string, user: any }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_PHONENUMBER + phonenumber)
+        .pipe(map(result => {
+          return result.user
+        }))
+        .subscribe(response => {
+          res(response);
+        }, error => {
+          // console.log(error);
+          rej();
+        });
+    });
+  }
+
+  /**
+   * Get user's info from Server
+   * @param id UserId
+   */
+  findUserByStaticCode(staticCode: string) {
+    return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
+
+      this.http.get<{ message: string, user: any }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_STATIC_CODE + staticCode)
+        .pipe(map(result => {
+          return result.user
+        }))
+        .subscribe(response => {
+          res(response);
+        }, error => {
           rej();
         });
     });

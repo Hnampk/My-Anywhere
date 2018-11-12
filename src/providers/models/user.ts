@@ -4,6 +4,7 @@ export class User {
     name: string;
     avatar: string;
     address: LocationBase;
+    staticCode: string;
 
     constructor(private _id, private _phonenumber) { }
 
@@ -16,12 +17,17 @@ export class User {
     }
 
     onResponseData(data) {
+        console.log(data);
         if (data.name) {
             this.name = data.name;
         }
 
         if (data.avatar) {
             this.avatar = data.avatar;
+        }
+
+        if(data.static_code){
+            this.staticCode = data.static_code;
         }
 
         if (data.address) {

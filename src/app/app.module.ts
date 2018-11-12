@@ -1,3 +1,4 @@
+import { Clipboard } from '@ionic-native/clipboard';
 import { AuthInterceptor } from './../providers/authentication/auth-interceptor';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -35,6 +36,7 @@ import { CircleController } from '../providers/circle-controller/circle-controll
     SplashScreen,
     Network,
     GoogleMaps,
+    Clipboard,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     AuthenticationProvider,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

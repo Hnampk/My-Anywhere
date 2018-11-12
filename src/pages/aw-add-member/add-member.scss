@@ -1,0 +1,52 @@
+page-add-member {
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    ion-content {
+        background-color: #F8F8F8 !important;
+    }
+    .main-content {
+        padding: 20px 30px;
+        background-color: white;
+        border-radius: 20px;
+        border: 1px solid #D6D6D6;
+        text-align: center;
+        margin-top: 30px;
+        .label {
+            font-size: 1.4em;
+            margin-bottom: 4px;
+        }
+        .msg {
+            color: #8D8D8D;
+            margin-bottom: 16px;
+        }
+        .code-container {
+            .char-container {
+                margin: 4px;
+                input{
+                    text-transform: uppercase;
+                }
+            }
+            .code {
+                width: 2em;
+                padding: 6px 2px;
+                font-size: 1.2em;
+                background-color: #61D5FE;
+                border-radius: 10px;
+                border: none;
+                text-align: center;
+                color: white;
+                font-weight: bold;
+            }
+        }
+    }
+}

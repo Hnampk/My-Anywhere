@@ -50,8 +50,9 @@ export class HomePage {
       // currentSteps: []
     }
 
+  circle: Circle;
+
   constructor(public navCtrl: NavController,
-    statusBar: StatusBar,
     private events: Events,
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
@@ -72,10 +73,6 @@ export class HomePage {
           this.hideLoading();
         });
     });
-
-    if (!statusBar.isVisible) {
-      statusBar.show();
-    }
   }
 
   ionViewDidLoad() {
@@ -124,9 +121,9 @@ export class HomePage {
           }
         }
       }, {
-        text: "Cài đặt chia sẻ",
+        text: "Cài đặt",
         handler: () => {
-
+          this.navCtrl.push("CircleSettingsPage", { circle: this.circle }, {animation: "ios-transition"});
         }
       }, {
         text: "Đo khoảng cách",
@@ -153,6 +150,7 @@ export class HomePage {
   }
 
   onUpdateCircleData(circle: Circle) {
+    this.circle = circle;
     this.mDatas.circleId = circle.id;
     this.mDatas.circleName = circle.name;
     this.mDatas.circleMembers = circle.getMembers();

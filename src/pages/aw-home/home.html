@@ -9,7 +9,8 @@
               <ion-icon name="ios-arrow-back-outline"></ion-icon>
             </button>
         </ion-buttons>
-        <ion-title (click)="onClickTitle()">{{ mDatas.circleId?mDatas.circleName:mTexts.title}}</ion-title>
+        <ion-title (click)="onClickTitle()">{{ circle?circle.name:mTexts.title}}</ion-title>
+        <!-- <ion-title (click)="onClickTitle()">{{ mDatas.circleId?mDatas.circleName:mTexts.title}}</ion-title> -->
         <ion-buttons right>
             <button ion-button icon-only class="more-btn" (click)="onClickMore()">
               <ion-icon name="ios-more-outline"></ion-icon>

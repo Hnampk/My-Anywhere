@@ -137,7 +137,7 @@ export class CircleController {
 
           // update circle's members
           circleData.members.forEach((memberId: string) => {
-            this.mUserController.getUserInfo(memberId)
+            this.mUserController.getUserInfoById(memberId)
               .then(userInfo => {
                 // update member info
                 let member = new User(memberId, userInfo['phonenumber']);

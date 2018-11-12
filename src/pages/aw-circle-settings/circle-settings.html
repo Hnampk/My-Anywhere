@@ -1,0 +1,58 @@
+<ion-header class="m-header aw-header">
+
+    <ion-toolbar>
+      <ion-buttons left>
+        <button ion-button (click)="onClickClose()">
+          <ion-icon name="ios-arrow-back-outline"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title (click)="onClickTitle()">
+        {{ mTexts.title }}
+      </ion-title>
+    </ion-toolbar>
+  
+  </ion-header>
+
+
+<ion-content padding>
+
+  <div class="content-container">
+    <div class="circle-name content-item border-bottom">
+      <span>{{ mDatas.circleName }}</span>
+    </div>
+    <div class="content-item border-bottom">
+      <div class="item-title">
+        <span>Tùy chỉnh</span>
+      </div>
+      <div class="inner-item">
+        <span>Chia sẻ vị trí</span>
+      </div>
+      <div class="inner-item">
+        <span>Chia sẻ lịch sử di chuyển</span>
+      </div>
+    </div>
+    <div class="content-item">
+      <div class="item-title a3-container">
+        <div>
+          <span>Thành viên</span>
+        </div>
+      </div>
+      <div class="member-item a3-container a3-items-center" (click)="onClickAddMember()">
+        <div class="member-avatar a3-container-center">
+          <ion-icon class="add-member-icon" name="ios-add-outline"></ion-icon>
+        </div>
+        <div class="member-name">
+          Thêm thành viên
+        </div>
+      </div>
+      <div class="member-item a3-container a3-items-center" *ngFor="let member of mDatas.circleMembers">
+        <div class="member-avatar" [ngStyle]="{'background-image': 'url('+member.avatar+')'}"></div>
+        <div class="member-name a3-flex-1">{{ member.name }}</div>
+        <div class="member-more">
+          <ion-icon name="ios-more-outline"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

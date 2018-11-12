@@ -52,6 +52,7 @@ page-user-info {
             padding: 0 20px;
             text-align: center;
             .edit-icon{
+                font-size: 1.4em;
                 color: #F4508A;
             }
         }
@@ -91,16 +92,23 @@ page-user-info {
         height: 100%;
         background-color: rgba(black, .6);
         #code-container {
-            padding: 2em 10px 1em 10px;
+            padding: 20px;
             border-radius: 20px;
             background-color: white;
+            .code-title{
+                padding: 0 20px 16px 20px;
+                font-size: 1.2em;
+                text-align: center
+            }
             .static-code {
-                margin-bottom: 8px;
+                font-size: 1.2em;
+                letter-spacing: 3px;
                 .code {
                     background-color: #61D5FE;
-                    padding: 10px 30px;
+                    padding: 10px 60px;
                     color: white;
                     border-radius: 20px;
+                    font-weight: bold;
                 }
             }
             .dynamic-code {

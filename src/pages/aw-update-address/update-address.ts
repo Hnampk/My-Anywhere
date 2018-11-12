@@ -163,9 +163,9 @@ export class UpdateAddressPage {
 
     try {
       await this.mUserController.updateAddress(newAddress);
-      let userInfo = await this.mUserController.getUserInfo(userId);
-      console.log(userInfo);
-      this.mUserController.getOwner().onResponseData(userInfo);
+      // let userInfo = await this.mUserController.getUserInfo(userId);
+      // console.log(userInfo);
+      // this.mUserController.getOwner().onResponseData(userInfo);
       if (this.mDatas.isSignUp) {
         this.navCtrl.push("CreateCirclePage", { isSignUp: true }, { animation: 'ios-transition' });
       }

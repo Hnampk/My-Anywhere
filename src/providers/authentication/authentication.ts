@@ -43,15 +43,16 @@ export class AuthenticationProvider {
           return {
             id: result["info"]._id,
             phonenumber: result["info"].phonenumber,
-            token: result["token"]
+            token: result["token"],
+            static_code: result["info"].static_code
           }
         }))
         .subscribe(response => {
-          console.log(response);
-
           this.token = response.token;
           this.mUserController.createOwner(response.id, response.phonenumber);
+          this.mUserController.getOwner().onResponseData({static_code: response.static_code});;
 
+          console.log(this.mUserController.getOwner());
           this.mUserController.onUserUpdated();
           res();
         }, (error) => {
@@ -86,10 +87,12 @@ export class AuthenticationProvider {
             phonenumber: loginData.info.phonenumber,
             address: loginData.info.address,
             name: loginData.info.name,
-            avatar: loginData.info.avatar
+            avatar: loginData.info.avatar,
+            static_code: loginData.info.static_code
           }
         }))
         .subscribe(response => {
+          console.log("________________,", response);
           this.token = response.token;
           // update user info
           this.mUserController.createOwner(response.id, response.phonenumber);

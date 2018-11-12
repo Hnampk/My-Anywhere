@@ -1,0 +1,54 @@
+page-circle-settings {
+    ion-content{
+        background-color: #F8F8F8 !important;
+    }
+    .content-container{
+        width: 100%;
+        background-color: white;
+        border-radius: 20px;
+        border: 1px solid lightgray;
+    }
+    .border-bottom{
+        border-bottom: 1px solid lightgray;
+    }
+    .content-item{
+        padding: 16px;
+        .item-title{
+            color: gray;
+            font-weight: bold;
+            font-size: .9em;
+        }
+        .inner-item{
+            padding: 16px 0;
+        }
+        .member-item{
+            padding: 6px 0;
+        }
+        .add-member-icon{
+            font-size: 2.6em;
+            color: #47B1FF;
+        }
+        .member-avatar{
+            width: 3em;
+            height: 3em;
+            margin-right: 16px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50%;
+        }
+        .member-name{
+
+        }
+        .member-more{
+            font-size: 1.6em;
+            padding: 6px;
+        }
+    }
+    .circle-name{
+        text-align: center;
+        font-size: 1.4em;
+        color: #8D8D8D;
+        // font-weight: bold;
+    }
+}

@@ -1,0 +1,43 @@
+<ion-header class="m-header aw-header">
+
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button (click)="onClickClose()">
+        <ion-icon name="ios-arrow-back-outline"></ion-icon>
+      </button>
+        </ion-buttons>
+        <ion-title (click)="onClickTitle()">
+            {{ mTexts.title }}
+        </ion-title>
+    </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+    <div class="main-content">
+        <div class="label">{{ mTexts.code }}</div>
+        <div class="msg">{{ mTexts.message }}</div>
+        <div class="code-container a3-container a3-justify-center" (click)="onClickCodeContainer()">
+            <div class="char-container">
+                <input #code1 class="code" type="text" maxlength="2" (input)="changed(0)">
+            </div>
+            <div class="char-container">
+                <input #code2 class="code" type="text" maxlength="2" (input)="changed(1)">
+            </div>
+            <div class="char-container">
+                <input #code3 class="code" type="text" maxlength="2" (input)="changed(2)">
+            </div>
+            <div class="char-container">
+                <input #code4 class="code" type="text" maxlength="2" (input)="changed(3)">
+            </div>
+            <div class="char-container">
+                <input #code5 class="code" type="text" maxlength="2" (input)="changed(4)">
+            </div>
+        </div>
+    </div>
+
+</ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

@@ -32,10 +32,10 @@
       </span>
     </div>
     <div class="address" (click)="onClickUpdateAddress()">
-      <span>{{ mDatas.user?.address.address }}</span>
       <span class="edit-icon">
-        <ion-icon name="md-create"></ion-icon>
+        <ion-icon name="ios-home-outline"></ion-icon>
       </span>
+      <span>{{ mDatas.user?.address.address }}</span>
     </div>
     <div class="rest a3-flex-1 a3-container a3-items-center">
       <div class="buttons-container a3-container">
@@ -59,17 +59,20 @@
 
 <div id="backdrop" *ngIf="mDatas.isShowCodes" class="a3-container-center" (click)="onClickBackdrop()">
   <div id="code-container" (click)="onClickContainer()">
+    <div class="code-title">
+      <span>{{ mTexts.staticCode }}</span>
+    </div>
     <div class="static-code a3-container a3-justify-center">
       <div class="code" (click)="onClickStaticCode()">
-        {{ staticCode }}
+        {{ mDatas.user.staticCode | uppercase }}
       </div>
     </div>
-    <div class="dynamic-code a3-container">
+    <!-- <div class="dynamic-code a3-container">
       <div class="icon-container" (click)="onClickRefreshDynamicCode()">
         <ion-icon name="aw-refresh"></ion-icon>
       </div>
       <div class="code" (click)="onClickDynamicCode()">{{ mTexts.dynamicCode }} : <span bold>{{ dynamicCode }}</span></div>
-    </div>
+    </div> -->
   </div>
 </div>
 
