@@ -93,6 +93,10 @@ export class UserController {
    */
   updateDisplayName(name: string) {
     return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
+
       let reqBody = {
         name: name
       }
@@ -111,25 +115,36 @@ export class UserController {
     });
   }
 
+  /**
+   * Update user's info: Display name & avatar
+   * @param name 
+   * @param avatarImage 
+   */
   updateUserInfo(name: string, avatarImage: File) {
-    let userData = new FormData();
+    return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
 
-    userData.append('name', name);
-    userData.append('image', avatarImage, this.owner.phonenumber);
-    console.log("dcmmm", userData.get("name"))
-    console.log("dcmmm", userData.get("image"))
+      let userData = new FormData();
 
-    
+      userData.append('name', name);
+      userData.append('image', avatarImage, this.owner.phonenumber);
 
-    // let testHeader = new HttpHeaders();
-    // testHeader.append('Access-Control-Allow-Origin', 'http://localhost:8100');
-    
-    this.http.post(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO, userData)
-      .subscribe(response => {
-        console.log(response);
-      }, error => {
-        console.log(error);
-      })
+      this.http.patch<{imagePath: string}>(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, userData)
+        .subscribe(response => {
+          this.owner.name = name;
+          this.owner.avatar = response.imagePath;
+
+          this.onUserUpdated();
+
+          res();
+        }, error => {
+          console.log(error);
+          this.mAppcontroller.onConnectionFailure();
+          rej();
+        });
+    });
   }
 
   /**

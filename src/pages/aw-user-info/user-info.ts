@@ -24,13 +24,15 @@ export class UserInfoPage {
     isShowCodes: boolean,
     onLoading: boolean,
     isGettingNewCode: boolean,
-    modified: boolean
+    modified: boolean,
+    imageFile: File
   } = {
       user: null,
       isShowCodes: false,
       onLoading: false,
       isGettingNewCode: false,
-      modified: false
+      modified: false,
+      imageFile: null
     }
 
 
@@ -172,7 +174,15 @@ export class UserInfoPage {
             text: 'Save',
             handler: async data => {
               this.showLoading();
-              await this.mUserController.updateDisplayName(this.mDatas.user.name);
+
+              if(this.mDatas.imageFile){
+                // update userinfo
+                await this.mUserController.updateUserInfo(this.mDatas.user.name, this.mDatas.imageFile);
+              }
+              else{
+                // update displayname
+                await this.mUserController.updateDisplayName(this.mDatas.user.name);
+              }
 
               this.updateOwnerData();
               this.mDatas.modified = false;
@@ -187,15 +197,15 @@ export class UserInfoPage {
   }
 
   onImageChanged(event) {
-    let file = (event.target as HTMLInputElement).files[0];
+    this.mDatas.imageFile = (event.target as HTMLInputElement).files[0];
 
     let reader = new FileReader();
     reader.onload = () => {
       this.mDatas.modified = true;
       this.mDatas.user.avatar = reader.result as string;
     }
-    console.log(file)
-    if (file)
-      reader.readAsDataURL(file);
+
+    if (this.mDatas.imageFile)
+      reader.readAsDataURL(this.mDatas.imageFile);
   }
 }

@@ -20,12 +20,6 @@
 </ion-header>
 
 <ion-content padding>
-    <div>
-      <button ion-button (click)="filePicker.click()"></button>
-      <input type="file" accept="image/x-png,image/jpeg" #filePicker (change)="onImageChanged($event)">
-      <img [src]="imageUrl">
-    </div>
-    <button ion-button (click)="onClickSave()">Test Save</button>
     <div *ngFor="let member of mDatas.circleMembers">{{ member.name }}</div>
 </ion-content>
 

@@ -153,31 +153,8 @@ export class HomePage {
   }
 
   onUpdateCircleData(circle: Circle) {
-    console.log(circle)
     this.mDatas.circleId = circle.id;
     this.mDatas.circleName = circle.name;
     this.mDatas.circleMembers = circle.getMembers();
-  }
-
-
-
-  imageUrl;
-  file
-  onImageChanged(event) {
-    this.file = (event.target as HTMLInputElement).files[0];
-
-    let reader = new FileReader();
-    reader.onload = () => {
-      this.imageUrl = reader.result;
-      console.log("imageUrl", this.imageUrl);
-    }
-    console.log(this.file)
-    console.log(this.imageUrl)
-    if (this.file)
-      reader.readAsDataURL(this.file);
-  }
-
-  onClickSave() {
-    this.mUserController.updateUserInfo("aaaaa", this.file);
   }
 }
