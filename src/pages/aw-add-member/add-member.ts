@@ -1,8 +1,18 @@
+import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
 import { Circle } from './../../providers/models/circle';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { User } from '../../providers/models/user';
+
+enum MemberStatus {
+  ADDED, NOT_MEMBER
+}
+
+class ResultMember extends User {
+  status: MemberStatus = MemberStatus.NOT_MEMBER;
+}
 
 @IonicPage()
 @Component({
@@ -34,14 +44,17 @@ export class AddMemberPage {
       onLoading: false
     }
 
-  circleId: string;
+  circle: Circle;
+  resultMembers: Array<ResultMember> = [];
+
   constructor(public navCtrl: NavController,
     private mUserController: UserController,
     private mAppController: AppController,
+    private mCircleController: CircleController,
     // private mAwModule: AwModule,
     public navParams: NavParams) {
     if (navParams.data['circle']) {
-      this.circleId = (<Circle>navParams.data['circle']).id;
+      this.circle = navParams.data['circle'];
     }
   }
 
@@ -103,8 +116,9 @@ export class AddMemberPage {
     this.showLoading();
 
     try {
-      let user = await this.mUserController.findUserByStaticCode(code);
-      console.log(user);
+      let users = await this.mUserController.findUsersByStaticCode(code) as Array<any>;
+      console.log(users);
+      this.onShowMembers(users);
     } catch (e) {
       this.mAppController.showToast("Invalid code!");
     }
@@ -153,6 +167,39 @@ export class AddMemberPage {
         break;
       }
     }
+  }
+
+  onShowMembers(members: Array<any>) {
+    this.resultMembers = [];
+
+    members.forEach(element => {
+      let resultMember = new ResultMember(element._id, element.phonenumber);
+      resultMember.onResponseData(element);
+
+      let isMember = this.circle.getMembers().find(member => { return member.id == element._id });
+
+      if (isMember) resultMember.status = MemberStatus.ADDED;
+
+      console.log(resultMember)
+
+      this.resultMembers.push(resultMember);
+    });
+  }
+
+  async onClickAdd(resultMember: ResultMember) {
+    this.showLoading();
+
+    // let member = new User()
+    try {
+      await this.mCircleController.addMemberToCircle(this.circle, resultMember);
+      resultMember.status = MemberStatus.ADDED;
+    } catch (e) {
+      this.mAppController.showToast("Xảy ra lỗi!");
+      this.resultMembers = [];
+      this.resetAll();
+    }
+
+    this.hideLoading();
   }
 
 }

@@ -60,19 +60,19 @@ export class HomePage {
     private mMenuController: MenuController,
     private mActionSheetController: ActionSheetController,
     public navParams: NavParams) {
-    events.subscribe("circles:show", data => {
-      let circle: Circle = data.circle;
-
-      console.log("Show Circle: ", circle);
-      this.showLoading();
-
-      this.mCircleController.getCircleById(circle.id)
-        .then((circle: Circle) => {
-          this.onUpdateCircleData(circle);
-
-          this.hideLoading();
-        });
-    });
+      this.events.subscribe("circles:show", data => {
+        let circle: Circle = data.circle;
+  
+        console.log("Show Circle: ", circle);
+        this.showLoading();
+  
+        this.mCircleController.getCircleById(data.circle.id)
+          .then((circle: Circle) => {
+            this.onUpdateCircleData(circle);
+  
+            this.hideLoading();
+          });
+      });
   }
 
   ionViewDidLoad() {
@@ -80,14 +80,18 @@ export class HomePage {
     this.mMenuController.enable(true);
   }
 
+  ionViewWillLeave(){
+    this.events.unsubscribe("circles:show");
+  }
+
   async ionViewDidEnter() {
     // REMOVE THIS, for test
-    {
-      // login
-      await this.mAuthenticationProvider.login("0377115027", "hoainam");
-      // get circles from server
-      await this.mCircleController.getMyCircles();
-    }
+    // {
+    //   // login
+    //   await this.mAuthenticationProvider.login("0377115027", "hoainam");
+    //   // get circles from server
+    //   await this.mCircleController.getMyCircles();
+    // }
   }
 
   showLoading() {

@@ -86,13 +86,15 @@ export class LoginPage {
         // get circles from server
         await this.mCircleController.getMyCircles();
 
+        this.navCtrl.setRoot("HomePage");
+
         this.mAppController.showToast("Đăng nhập thành công!");
-        if (!this.mAuthenticationProvider.hasAddress()) {
-          this.navCtrl.setRoot("UpdateAddressPage");
-        }
-        else {
-          this.navCtrl.setRoot("HomePage");
-        }
+        // if (!this.mAuthenticationProvider.hasAddress()) {
+        //   this.navCtrl.setRoot("UpdateAddressPage");
+        // }
+        // else {
+        //   this.navCtrl.setRoot("HomePage");
+        // }
       }
       catch (error) {
         if (error) this.mAppController.showToast(error);

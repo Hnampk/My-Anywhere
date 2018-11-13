@@ -92,13 +92,10 @@ export class AuthenticationProvider {
           }
         }))
         .subscribe(response => {
-          console.log("________________,", response);
           this.token = response.token;
           // update user info
           this.mUserController.createOwner(response.id, response.phonenumber);
           this.mUserController.getOwner().onResponseData(response);
-
-          console.log(this.mUserController.getOwner());
           this.mUserController.onUserUpdated();
 
           res();

@@ -25,6 +25,10 @@ export class CircleController {
     this.circles = [];
   }
 
+  getCircles() {
+    return this.circles;
+  }
+
   /**
    * Make request to create new Circle
    * @param name 
@@ -49,11 +53,23 @@ export class CircleController {
         }, error => {
           rej(error);
         });
-    })
+    });
   }
 
-  getCircles() {
-    return this.circles;
+  addMemberToCircle(circle: Circle, member: User){
+    return new Promise((res, rej)=>{
+
+      // send request to create new circle
+      this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.ADD_MEMBER_TO_CIRCLE + circle.id, {member_id: member.id})
+        .subscribe(response => {
+          circle.addMember(member);
+          console.log(circle);
+
+          res();
+        }, error => {
+          rej(error);
+        });
+    });
   }
 
   /**
@@ -70,10 +86,11 @@ export class CircleController {
   }
 
   /**
-   * Get Circles From Server, By User Id
+   * Get Circles of a User From Server, By User Id
    * @param userId 
    */
   private getCirclesByUserId(userId: string) {
+    console.log("getCirclesByUserId")
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -134,9 +151,10 @@ export class CircleController {
 
           circle.onResponseData(circleData);
           circle.clearMembers();
-
+          console.log("-----------------")
           // update circle's members
           circleData.members.forEach((memberId: string) => {
+            console.log(memberId);
             this.mUserController.getUserInfoById(memberId)
               .then(userInfo => {
                 // update member info
@@ -144,6 +162,7 @@ export class CircleController {
                 member.onResponseData(userInfo);
 
                 circle.addMember(member);
+                console.log(circle.getMembers())
               });
           });
 

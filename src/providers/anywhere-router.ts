@@ -15,6 +15,7 @@ export class AnywhereRouter{
 
     // Circle
     public static CREATE_CIRCLE: string = "/circles/create/";
+    public static ADD_MEMBER_TO_CIRCLE: string = "/circles/add_member/"; //:circle_id
     public static GET_CIRCLES_BY_USER_ID: string = "/circles/by_user_id/"; //:id
-    public static GET_CIRCLE_BY_ID: string = "/circles/" //:id
+    public static GET_CIRCLE_BY_ID: string = "/circles/"; //:circle_id
 }

@@ -82,15 +82,15 @@ export class UserController {
    * Get user's info from Server
    * @param id UserId
    */
-  findUserByStaticCode(staticCode: string) {
+  findUsersByStaticCode(staticCode: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
       // }
 
-      this.http.get<{ message: string, user: any }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_STATIC_CODE + staticCode)
+      this.http.get<{ message: string, result: Array<any> }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_STATIC_CODE + staticCode)
         .pipe(map(result => {
-          return result.user
+          return result.result
         }))
         .subscribe(response => {
           res(response);
@@ -176,7 +176,7 @@ export class UserController {
       userData.append('name', name);
       userData.append('image', avatarImage, this.owner.phonenumber);
 
-      this.http.patch<{imagePath: string}>(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, userData)
+      this.http.patch<{ imagePath: string }>(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, userData)
         .subscribe(response => {
           this.owner.name = name;
           this.owner.avatar = response.imagePath;

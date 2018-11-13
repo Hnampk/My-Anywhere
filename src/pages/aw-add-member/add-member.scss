@@ -15,7 +15,7 @@ page-add-member {
         background-color: #F8F8F8 !important;
     }
     .main-content {
-        padding: 20px 30px;
+        padding: 20px 16px;
         background-color: white;
         border-radius: 20px;
         border: 1px solid #D6D6D6;
@@ -46,6 +46,39 @@ page-add-member {
                 text-align: center;
                 color: white;
                 font-weight: bold;
+            }
+        }
+    }
+    .members-container{
+        padding: 10px 16px;
+        background-color: white;
+        border-radius: 20px;
+        border: 1px solid #D6D6D6;
+        margin-top: 16px;
+        .member-item{
+            padding: 6px 0;
+        }
+        .add-member-icon{
+            font-size: 2.6em;
+            color: #47B1FF;
+        }
+        .member-avatar{
+            width: 3em;
+            height: 3em;
+            margin-right: 16px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50%;
+        }
+        .member-name{
+            font-weight: bold;
+        }
+        .member-add-button{
+            button{
+                height: 0;
+                padding: 16px;
+                background-color: #2DD4FF;
             }
         }
     }

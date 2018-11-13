@@ -66,13 +66,14 @@ export class MyApp {
 
       events.subscribe('circles:updated', () => {
         this.menuDatas.circles = this.mCircleController.getCircles();
+        if (this.menuDatas.circles.length > 0){
+          this.menuDatas.currentCircleId = this.menuDatas.circles[0].id;
 
-        this.menuDatas.currentCircleId = this.menuDatas.circles[0].id;
-        
         // emit event
         setTimeout(() => {
           this.onShowCircle(this.menuDatas.circles[0]);
         }, 1000);
+        }
         console.log('circles:updated', this.menuDatas);
       });
 

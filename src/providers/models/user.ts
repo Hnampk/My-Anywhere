@@ -6,7 +6,7 @@ export class User {
     address: LocationBase;
     staticCode: string;
 
-    constructor(private _id, private _phonenumber) { }
+    constructor(private _id: string, private _phonenumber: string) { }
 
     get id() {
         return this._id;
@@ -17,7 +17,6 @@ export class User {
     }
 
     onResponseData(data) {
-        console.log(data);
         if (data.name) {
             this.name = data.name;
         }
