@@ -20,8 +20,97 @@
 
 </ion-header>
 
-<ion-content padding>
-    <div *ngFor="let member of mDatas.circleMembers">{{ member.name }}</div>
+<ion-content>
+    <!-- <div *ngFor="let member of mDatas.circleMembers">{{ member.name }} - {{ member?.lastestLocation?.time }}</div>
+    <button ion-button (click)="onClickSendMessage()">Send message</button>
+    <button ion-button (click)="onClickUpdateLocation()">Update location</button> -->
+
+    <div class="main-content a1-fill-parent a3-container a3-column">
+        <div id="map">
+            <div #members class="members-background hidden-members hidden">
+                <div class="members-container a3-container-inline">
+                    <div class="member a3-container a3-column a3-items-center" *ngFor="let member of mDatas.circleMembers" (click)="onClickChangeMemberDetail(member)">
+                        <div class="avatar" [class.is-actived]="member==mDatas.memberDetail">
+                            <img [src]="member.avatar">
+                        </div>
+                        <div class="name a1-text-ellipsis">{{ member.name }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rest a3-flex-1">
+            <div class="item-container" *ngIf="!mDatas.isOnDetail">
+                <ion-grid no-padding>
+                    <ion-row class="item a3-container" *ngFor="let member of mDatas.circleMembers" (click)="onClickMemberPosition(member)">
+                        <ion-col col-2 class="avatar-container" [ngStyle]="{'background-image':'url('+member.avatar+')'}">
+                            <div class="status offline" [class.online]="member.isOnline"></div>
+                        </ion-col>
+                        <ion-col col-10 class="info-container a3-container a3-justify-center a3-column">
+                            <ion-row style="margin-bottom: 4px">
+                                <ion-col class="name">
+                                    {{ member.name }}
+                                </ion-col>
+                                <ion-col col-3 class="time">
+                                    {{ member.lastestLocation?.time | date:'shortTime' }}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <div class="location">{{ member.lastestLocation?.address }}</div>
+                            </ion-row>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </div>
+            <div class="route-container" *ngIf="mDatas.isOnDetail">
+                <div *ngIf="mDatas.memberDetail?.isPublic" class="a1-fill-parent">
+                    <ion-grid no-padding>
+                        <ion-row class="step" *ngFor="let step of mDatas.currentTrace; first as f; last as l">
+                            <ion-col col-2 class="icon-container a1-relative">
+                                <div class="route-connect-container a3-container-center" *ngIf="!f">
+                                    <div class="route-connect"></div>
+                                </div>
+                                <div>
+                                    <ion-icon class="icon-point" [class.point]="!(f||l)" [name]="(f||l)?'aw-route-start':'aw-route-point'"></ion-icon>
+                                </div>
+                            </ion-col>
+                            <ion-col col-10 class="info-container a3-container a3-column a3-justify-center" (click)="onClickStep(step)">
+                                <ion-row>
+                                    <ion-col class="title">
+                                        {{ step.title }}
+                                    </ion-col>
+                                    <ion-col col-3 class="time">
+                                        {{ step.time | date:'shortTime' }}
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <div class="location">{{ step.address }}</div>
+                                </ion-row>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <div class="notice a3-container-center a1-fill-parent" *ngIf="mDatas.currentTrace.length==0">
+                        <div>{{ mTexts.emptyRoute }}</div>
+                    </div>
+                </div>
+                <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail?.isPublic">
+                    <div>{{ mTexts.notPublic }}</div>
+                </div>
+            </div>
+            <div class="btn-chat-container a3-container-center">
+                <div class="chat-btn blue-btn" *ngIf="!mDatas.isOnDetail" (click)="onClickChat()">
+                    <span>
+                        <ion-icon name="aw-chat"></ion-icon>
+                    </span>
+                    <span class="title">{{ mTexts.chatButton | uppercase }}</span>
+                    <span class="msg-number a3-container-center">{{ mDatas.circleNewMessages }}</span>
+                </div>
+                <div no-padding class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail" (click)="onClickDatePicker()">
+                    <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </ion-content>
 
 <aw-loading *ngIf="mDatas.onLoading"></aw-loading>

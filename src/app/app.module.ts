@@ -16,6 +16,7 @@ import { MapServices } from '../providers/map-services/map-services';
 import { UserController } from '../providers/user-controller/user-controller';
 import { AppController } from '../providers/app-controller/app-controller';
 import { CircleController } from '../providers/circle-controller/circle-controller';
+import { SocketService } from '../providers/socket-service/socket-service';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { CircleController } from '../providers/circle-controller/circle-controll
     UserController,
     AppController,
     CircleController,
+    SocketService,
   ]
 })
 export class AppModule { }

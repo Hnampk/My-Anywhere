@@ -70,22 +70,24 @@ page-home {
                     border-bottom: 1px solid #F1F1F1;
                     padding: 4px 20px 4px 10px;
                     .avatar-container {
-                        padding: 4px;
+                        background-size: cover;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        width: 15vw;
+                        height: 15vw;
+                        border-radius: 50%;
+                        border: 1px solid #BEBEBE;
                         position: relative;
-                        img {
-                            width: 100%;
-                            border-radius: 50%;
-                            border: 2px solid #BEBEBE;
-                        }
                         .status {
                             position: absolute;
-                            bottom: 4px;
-                            right: 4px;
+                            bottom: 1px;
+                            right: 1px;
                             border: 2px solid white;
                             border-radius: 50%;
                             background-color: white;
-                            width: 1em;
-                            height: 1em;
+                            width: 3vw;
+                            height: 3vw;
+
                         }
                         .online {
                             background-color: #38DC54 !important;
@@ -114,7 +116,6 @@ page-home {
                         }
                         .location {
                             color: #464646;
-                            font-weight: 500;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;

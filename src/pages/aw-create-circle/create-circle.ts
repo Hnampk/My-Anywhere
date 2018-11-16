@@ -1,3 +1,4 @@
+import { Circle } from './../../providers/models/circle';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CircleController } from '../../providers/circle-controller/circle-controller';
@@ -38,9 +39,15 @@ export class CreateCirclePage {
 
   async onClickNext() {
     this.showLoading();
-    await this.mCircleController.createCircle(this.mDatas.circleName);
+    let circle = await this.mCircleController.createCircle(this.mDatas.circleName);
     this.hideLoading();
-    this.navCtrl.setRoot("HomePage");
+    this.navCtrl.setRoot("HomePage")
+    .then(()=>{
+      // setTimeout(() => {
+      //   console.log("??????");
+      //   this.mCircleController.onShowCircle(circle);
+      // }, 2000);
+    });
   }
   
   onClickClose(){

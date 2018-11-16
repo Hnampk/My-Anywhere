@@ -3,7 +3,7 @@ import { AuthenticationProvider } from './../../providers/authentication/authent
 import { UserController } from './../../providers/user-controller/user-controller';
 import { Component } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
-import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { User } from '../../providers/models/user';
 
 @IonicPage()

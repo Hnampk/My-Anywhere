@@ -1,5 +1,6 @@
 import { User } from "./user";
 import { Route } from "./route";
+import { Location } from "./location";
 
 export class Circle {
     private admin_id: string;
@@ -7,19 +8,19 @@ export class Circle {
     private routes: Array<Route> = [];
     name: string;
 
-    constructor(private _id: string){
+    constructor(private _id: string) {
 
     }
 
-    get id(){
+    get id() {
         return this._id;
     }
 
-    getMembers(){
+    getMembers() {
         return this.members;
     }
 
-    clearMembers(){
+    clearMembers() {
         this.members = [];
     }
 
@@ -27,19 +28,25 @@ export class Circle {
      * Update data for circle
      * @param data : {admin_id, members, name}
      */
-    onResponseData(data){
+    onResponseData(data) {
         // console.log(data);
 
-        if(data.name){
+        if (data.name) {
             this.name = data.name;
         }
 
-        if(data.admin_id){
+        if (data.admin_id) {
             this.admin_id = data.admin_id;
         }
     }
 
-    addMember(member: User){
+    addMember(member: User) {
         this.members.push(member);
+    }
+
+    updateLocation(memberId: string, location: Location) {
+        let member = this.members.find(member => { return member.id == memberId });
+
+        member.updateLastestLocation(location);
     }
 }

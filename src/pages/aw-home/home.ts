@@ -1,11 +1,12 @@
+import { SocketService } from './../../providers/socket-service/socket-service';
 import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
-import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, ActionSheetController, Events } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { User } from '../../providers/models/user';
+import { Location } from '../../providers/models/location';
 
 @IonicPage()
 @Component({
@@ -32,7 +33,7 @@ export class HomePage {
     onLoading: boolean,
     isShowingDatePicker: boolean,
     currentDateView: Date,
-    // currentTrace: Array<Location>,
+    currentTrace: Array<Location>,
     // currentRoute: Polyline,
     // currentSteps: Array<Marker>
   } = {
@@ -45,7 +46,7 @@ export class HomePage {
       onLoading: false,
       isShowingDatePicker: false,
       currentDateView: new Date(),
-      // currentTrace: [],
+      currentTrace: [],
       // currentRoute: null,
       // currentSteps: []
     }
@@ -59,20 +60,35 @@ export class HomePage {
     private mCircleController: CircleController,
     private mMenuController: MenuController,
     private mActionSheetController: ActionSheetController,
+    private mSocketService: SocketService,
     public navParams: NavParams) {
-      this.events.subscribe("circles:show", data => {
-        let circle: Circle = data.circle;
-  
-        console.log("Show Circle: ", circle);
-        this.showLoading();
-  
-        this.mCircleController.getCircleById(data.circle.id)
-          .then((circle: Circle) => {
-            this.onUpdateCircleData(circle);
-  
-            this.hideLoading();
-          });
-      });
+  }
+
+  ionViewWillEnter() {
+    this.mSocketService.newMessageReceived().subscribe(data => {
+      console.log("Received new message", data);
+    });
+
+    // this.mSocketService.updateMemberLocationEventReceived().subscribe(data => {
+    //   console.log("Received new member's location", data, this.circle);
+    //   // if (this.circle) {
+    //   //   this.circle.updateLocation(data.from, data.location);
+    //   // }
+    // });
+
+    this.events.subscribe("circles:show", data => {
+      let circle: Circle = data.circle;
+
+      console.log("Show Circle: ", circle);
+      this.showLoading();
+
+      this.mCircleController.getCircleByIdFromServer(data.circle.id)
+        .then((circle: Circle) => {
+          this.onUpdateCircleData(circle);
+
+          this.hideLoading();
+        });
+    });
   }
 
   ionViewDidLoad() {
@@ -80,7 +96,7 @@ export class HomePage {
     this.mMenuController.enable(true);
   }
 
-  ionViewWillLeave(){
+  ionViewWillLeave() {
     this.events.unsubscribe("circles:show");
   }
 
@@ -106,6 +122,10 @@ export class HomePage {
     this.mMenuController.open();
   }
 
+  onClickMemberPosition(member: User) {
+    console.log(member);
+  }
+
   onClickMore() {
     let action = this.mActionSheetController.create({
       title: "Tùy chọn",
@@ -127,7 +147,7 @@ export class HomePage {
       }, {
         text: "Cài đặt",
         handler: () => {
-          this.navCtrl.push("CircleSettingsPage", { circle: this.circle }, {animation: "ios-transition"});
+          this.navCtrl.push("CircleSettingsPage", { circle: this.circle }, { animation: "ios-transition" });
         }
       }, {
         text: "Đo khoảng cách",
@@ -158,5 +178,21 @@ export class HomePage {
     this.mDatas.circleId = circle.id;
     this.mDatas.circleName = circle.name;
     this.mDatas.circleMembers = circle.getMembers();
+  }
+
+  onClickSendMessage() {
+    try {
+      this.mSocketService.sendMessage(this.mDatas.circleId);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  onClickChat() {
+    let newLocation = new Location(20.992590, 105.843700, "135 Nguyen An Ninh, Tuong Mai, Hoang Mai, Ha Noi");
+    newLocation.setTime(Date.now());
+    let circles = this.mCircleController.getCircles().map(circle => { return circle.id });
+
+    this.mSocketService.updateMyLocation(newLocation, circles)
   }
 }

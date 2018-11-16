@@ -1,3 +1,4 @@
+import { SocketService } from './../providers/socket-service/socket-service';
 import { Circle } from './../providers/models/circle';
 import { CircleController } from './../providers/circle-controller/circle-controller';
 import { UserController } from './../providers/user-controller/user-controller';
@@ -47,6 +48,7 @@ export class MyApp {
     private events: Events,
     private mUserController: UserController,
     private mCircleController: CircleController,
+    private mSocketService: SocketService,
     splashScreen: SplashScreen) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -64,15 +66,17 @@ export class MyApp {
         console.log('user:updated', this.menuDatas);
       });
 
-      events.subscribe('circles:updated', () => {
+      events.subscribe('circles:updated', (data: { circle: Circle }) => {
+        console.log(data)
         this.menuDatas.circles = this.mCircleController.getCircles();
-        if (this.menuDatas.circles.length > 0){
+        if (this.menuDatas.circles.length > 0) {
           this.menuDatas.currentCircleId = this.menuDatas.circles[0].id;
 
-        // emit event
-        setTimeout(() => {
-          this.onShowCircle(this.menuDatas.circles[0]);
-        }, 1000);
+          // emit event
+          setTimeout(() => {
+            this.onShowCircle(data.circle);
+          }, 1000);
+
         }
         console.log('circles:updated', this.menuDatas);
       });
@@ -105,9 +109,8 @@ export class MyApp {
   }
 
   private onClickCircle(circle: Circle) {
-    // update current circle id
-    this.menuDatas.currentCircleId = circle.id;
-
+    this.mSocketService.leaveCircleRoom(this.menuDatas.currentCircleId);
+    
     // emit event
     this.onShowCircle(circle);
     this.menu.close();
@@ -118,7 +121,10 @@ export class MyApp {
    * @param circle 
    */
   private onShowCircle(circle: Circle) {
-    this.events.publish("circles:show", { circle });
+    this.mSocketService.joinCircleRoom(circle.id);
+    // update current circle id
+    this.menuDatas.currentCircleId = circle.id;
+    this.mCircleController.onShowCircle(circle);
   }
 }
 

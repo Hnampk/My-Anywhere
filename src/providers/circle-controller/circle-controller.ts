@@ -29,12 +29,16 @@ export class CircleController {
     return this.circles;
   }
 
+  getCircleById(circleId: string) {
+    return this.circles.find(circle => { return circle.id == circleId });
+  }
+
   /**
    * Make request to create new Circle
    * @param name 
    */
   createCircle(name: string) {
-    return new Promise((res, rej) => {
+    return new Promise<Circle>((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
       // }
@@ -46,21 +50,22 @@ export class CircleController {
 
       // send request to create new circle
       this.http.post<{ info: any }>(this.serviceUrl + AnywhereRouter.CREATE_CIRCLE, newCircle)
-        .subscribe(response => {
-          this.addNewCircle(response.info)
-          this.onCirclesUpdated();
-          res();
+        .subscribe(async response => {
+          let circle = await this.addNewCircle(response.info)
+
+          this.onCirclesUpdated(this.circles[this.circles.length - 1]);
+          res(circle);
         }, error => {
           rej(error);
         });
     });
   }
 
-  addMemberToCircle(circle: Circle, member: User){
-    return new Promise((res, rej)=>{
+  addMemberToCircle(circle: Circle, member: User) {
+    return new Promise((res, rej) => {
 
       // send request to create new circle
-      this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.ADD_MEMBER_TO_CIRCLE + circle.id, {member_id: member.id})
+      this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.ADD_MEMBER_TO_CIRCLE + circle.id, { member_id: member.id })
         .subscribe(response => {
           circle.addMember(member);
           console.log(circle);
@@ -78,7 +83,7 @@ export class CircleController {
    */
   getMyCircles() {
     return new Promise((res, rej) => {
-      this.getCirclesByUserId(this.mUserController.getOwner().id)
+      this.getCirclesByUserIdFromServer(this.mUserController.getOwner().id)
         .then(() => {
           res();
         });
@@ -89,8 +94,7 @@ export class CircleController {
    * Get Circles of a User From Server, By User Id
    * @param userId 
    */
-  private getCirclesByUserId(userId: string) {
-    console.log("getCirclesByUserId")
+  private getCirclesByUserIdFromServer(userId: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -104,7 +108,7 @@ export class CircleController {
           response.circles.forEach(element => {
             this.addNewCircle(element);
           });
-          this.onCirclesUpdated();
+          this.onCirclesUpdated(this.circles[0]);
           res();
           // console.log(this.circles);
         }, error => {
@@ -113,7 +117,7 @@ export class CircleController {
     });
   }
 
-  getCircleById(circleId: string) {
+  getCircleByIdFromServer(circleId: string) {
     return new Promise((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
@@ -136,11 +140,14 @@ export class CircleController {
    * @param circleData 
    */
   private addNewCircle(circleData) {
-    // update circle info
-    let circle = new Circle(circleData._id);
-    circle.onResponseData(circleData);
+    return new Promise<Circle>((res, rej) => {
+      // update circle info
+      let circle = new Circle(circleData._id);
+      circle.onResponseData(circleData);
 
-    this.circles.push(circle);
+      this.circles.push(circle);
+      res(circle);
+    });
   }
 
   private updateCircle(circleData) {
@@ -151,10 +158,8 @@ export class CircleController {
 
           circle.onResponseData(circleData);
           circle.clearMembers();
-          console.log("-----------------")
           // update circle's members
           circleData.members.forEach((memberId: string) => {
-            console.log(memberId);
             this.mUserController.getUserInfoById(memberId)
               .then(userInfo => {
                 // update member info
@@ -162,7 +167,6 @@ export class CircleController {
                 member.onResponseData(userInfo);
 
                 circle.addMember(member);
-                console.log(circle.getMembers())
               });
           });
 
@@ -176,9 +180,14 @@ export class CircleController {
   /**
    * Emit "circles:updated" event
    * => Update Menu
+   * @param circle current view circle
    */
-  private onCirclesUpdated() {
-    this.events.publish("circles:updated");
+  onCirclesUpdated(circle: Circle) {
+    this.events.publish("circles:updated", { circle });
+  }
+
+  onShowCircle(circle: Circle) {
+    this.events.publish("circles:show", { circle });
   }
 
 }
