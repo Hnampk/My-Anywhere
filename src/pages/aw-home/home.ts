@@ -63,7 +63,6 @@ export class HomePage {
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
     private mCircleController: CircleController,
-    private mMenuController: MenuController,
     private mActionSheetController: ActionSheetController,
     private mSocketService: SocketService,
     public navParams: NavParams) {
@@ -71,38 +70,40 @@ export class HomePage {
   }
 
   ngOnInit() {
-    this.events.subscribe("circles:show", data => {
+    this.events.subscribe("circles:show", async data => {
       this.showLoading();
 
-      this.mCircleController.getCircleByIdFromServer(data.circle.id)
-        .then((circle: Circle) => {
-          this.onUpdateCircleData(circle);
+      let circle = await this.mCircleController.getCircleByIdFromServer(data.circle.id)
+      this.onUpdateCircleData(circle);
 
-          if (LocationService) {
-            LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
-              if (this.map) {
-                let cameraPosition: CameraPosition<ILatLng> = {
-                  target: location.latLng,
-                  duration: 300,
-                  zoom: 17
-                }
+      LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
+        if (this.map) {
+          let cameraPosition: CameraPosition<ILatLng> = {
+            target: location.latLng,
+            duration: 300,
+            zoom: 17
+          }
 
-                this.onSetupMap(circle);
+          this.onSetupMap(circle);
 
-                this.map.animateCamera(cameraPosition)
-                  .then(() => {
-                    this.hideLoading();
-                  })
-                  .catch(e => {
-                    this.hideLoading();
-                  });
-              }
+          this.map.animateCamera(cameraPosition)
+            .then(() => {
+              this.hideLoading();
+            })
+            .catch(e => {
+              this.hideLoading();
             });
-          }
-          else {
-            this.hideLoading();
-          }
-        });
+        }
+      })
+      .catch(e=>{
+        this.hideLoading();
+      });
+    });
+
+    this.mPlatform.ready().then(() => {
+      if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
+        this.loadMap();
+      }
     });
   }
 
@@ -110,12 +111,6 @@ export class HomePage {
     this.mSocketService.newMessageReceived().subscribe(data => {
       console.log("Received new message", data);
     });
-
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad HomePage');
-    this.mMenuController.enable(true);
   }
 
   ionViewWillLeave() {
@@ -123,13 +118,6 @@ export class HomePage {
   }
 
   async ionViewDidEnter() {
-
-    this.mPlatform.ready().then(() => {
-      if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
-        this.loadMap();
-      }
-    });
-
     // REMOVE THIS, for test
     // {
     //   // login
@@ -197,7 +185,7 @@ export class HomePage {
   }
 
   onClickMenu() {
-    this.mMenuController.open();
+    this.menu.open();
   }
 
   onClickMemberPosition(member: User) {
@@ -264,7 +252,7 @@ export class HomePage {
 
       members.forEach(member => {
         if (member.lastestLocation) {
-          if(!member.marker){
+          if (!member.marker) {
             // let icon: MarkerIcon = {
             //   url: "./assets/test.JPG",
             //   size: {
@@ -277,15 +265,15 @@ export class HomePage {
               icon: "",//member.avatar,
               position: new LatLng(member.lastestLocation.lat, member.lastestLocation.lng),
             }
-  
+
             this.map.addMarker(markerOptions).then(marker => {
               member.setMarker(marker);
             })
-            .catch(error=>{
-  
-            });
+              .catch(error => {
+
+              });
           }
-          else{
+          else {
             member.updateMarkerPosition();
           }
         }
@@ -295,18 +283,27 @@ export class HomePage {
 
   onClickSendMessage() {
     try {
-      this.mSocketService.sendMessage(this.mDatas.circleId);
+      this.mSocketService.sendMessage(this.mDatas.circleId, this.mUserController.getOwner().id);
     } catch (e) {
       console.log(e);
     }
   }
 
   onClickChat() {
-    let newLocation = new Location(20.992590, 105.843700, "135 Nguyen An Ninh, Tuong Mai, Hoang Mai, Ha Noi");
-    newLocation.setTime(Date.now());
-    let circles = this.mCircleController.getCircles().map(circle => { return circle.id });
+    console.log("onClickChat");
+    this.mSocketService.startWatchPosition();
 
-    this.mSocketService.updateMyLocation(newLocation, circles)
+
+    // let newLocation = new Location(20.992590, 105.843700, "135 Nguyen An Ninh, Tuong Mai, Hoang Mai, Ha Noi");
+    // newLocation.setTime(Date.now());
+    // let circles = this.mCircleController.getCircles().map(circle => { return circle.id });
+
+    // this.mSocketService.updateMyLocation(newLocation, circles, this.mUserController.getOwner().id)
+  }
+
+  onClickTitle() {
+    console.log("onClickTitle");
+    this.mSocketService.stopWatchPosition();
   }
 
   // 00:00 this day in milliseconds

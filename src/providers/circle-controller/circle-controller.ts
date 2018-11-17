@@ -136,7 +136,7 @@ export class CircleController {
   }
 
   getCircleByIdFromServer(circleId: string) {
-    return new Promise((res, rej) => {
+    return new Promise<Circle>((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
       // }

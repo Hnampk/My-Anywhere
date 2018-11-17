@@ -12,7 +12,7 @@ export class MapServices {
   }
 
   requestAddress(location: ILatLng) {
-    return new Promise((res, rej) => {
+    return new Promise<string>((res, rej) => {
       let geoRequest: GeocoderRequest = {
         position: location
       }
@@ -22,12 +22,13 @@ export class MapServices {
           let address = data[0]['extra'].lines[0];
           res(address);
         }
-        res();
+        res("");
       }).catch(err => {
-        rej();
+        rej("");
       });
     }).catch(e => {
       console.log(e);
+      return "";
     });;
   }
 

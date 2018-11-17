@@ -1,0 +1,8 @@
+1. node_modules/cordova-plugin-mauron85-background-geolocation/www/BackgroundGeolocation.js
+    - line 12, 13:
+        from: 
+            var exec = require('cordova/exec');
+            var channel = require('cordova/channel');
+        to: 
+            var exec = cordova.require('cordova/exec');
+            var channel = cordova.require('cordova/channel');

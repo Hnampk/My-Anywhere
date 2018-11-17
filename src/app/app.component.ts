@@ -107,7 +107,7 @@ export class MyApp {
   }
 
   private onClickCircle(circle: Circle) {
-    this.mSocketService.leaveCircleRoom(this.menuDatas.currentCircleId);
+    this.mSocketService.leaveCircleRoom(this.menuDatas.currentCircleId, this.mUserController.getOwner().id);
 
     // emit event
     this.onShowCircle(circle);
@@ -119,7 +119,7 @@ export class MyApp {
    * @param circle 
    */
   private onShowCircle(circle: Circle) {
-    this.mSocketService.joinCircleRoom(circle.id);
+    this.mSocketService.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
     // update current circle id
     this.menuDatas.currentCircleId = circle.id;
 

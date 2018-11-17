@@ -1,3 +1,5 @@
+import { MapServices } from './../map-services/map-services';
+import { Observable } from 'rxjs/Observable';
 import { User } from './../models/user';
 import { AppController } from './../app-controller/app-controller';
 import { LocationBase } from './../models/location-base';
@@ -7,6 +9,9 @@ import { Injectable } from '@angular/core';
 
 import { map } from 'rxjs/operators';
 import { Events } from 'ionic-angular';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { SocketService } from '../socket-service/socket-service';
+import { Location } from '../models/location';
 
 @Injectable()
 export class UserController {
@@ -18,6 +23,8 @@ export class UserController {
 
   constructor(public http: HttpClient,
     private events: Events,
+    private geolocation: Geolocation,
+    private mMapServices: MapServices,
     private mAppcontroller: AppController) { }
 
   getOwner() {
@@ -31,6 +38,7 @@ export class UserController {
   createOwner(id: string, phonenumber: string) {
     this.owner = new User(id, phonenumber);
   }
+
 
   /**
    * Get user's info from Server

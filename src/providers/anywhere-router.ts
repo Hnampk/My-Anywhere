@@ -1,6 +1,6 @@
 export class AnywhereRouter{
-    // public static SERVICE_URL: string = "http://168.63.254.198:8080";
-    public static SERVICE_URL: string = "http://localhost:8080";
+    public static SERVICE_URL: string = "http://168.63.254.198:8080";
+    // public static SERVICE_URL: string = "http://localhost:8080";
 
     // Authentication
     public static LOGIN: string = "/api/users/login/";

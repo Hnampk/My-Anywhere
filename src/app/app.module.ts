@@ -7,6 +7,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Network } from '@ionic-native/network';
 import { GoogleMaps } from '@ionic-native/google-maps';
+import { Geolocation } from '@ionic-native/geolocation';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -37,6 +38,7 @@ import { SocketService } from '../providers/socket-service/socket-service';
     SplashScreen,
     Network,
     GoogleMaps,
+    Geolocation,
     Clipboard,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     AuthenticationProvider,
