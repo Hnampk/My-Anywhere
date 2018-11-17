@@ -1,3 +1,4 @@
+import { ComponentsModule } from './../../components/components.module';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CircleSettingsPage } from './circle-settings';
@@ -8,6 +9,7 @@ import { CircleSettingsPage } from './circle-settings';
   ],
   imports: [
     IonicPageModule.forChild(CircleSettingsPage),
+    ComponentsModule
   ],
 })
 export class CircleSettingsPageModule {}

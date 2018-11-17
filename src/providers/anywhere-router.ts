@@ -15,6 +15,8 @@ export class AnywhereRouter{
     // Circle
     public static CREATE_CIRCLE: string = "/api/circles/create/";
     public static ADD_MEMBER_TO_CIRCLE: string = "/api/circles/add_member/"; //:circle_id
+    public static REMOVE_MEMBER_FROM_CIRCLE: string = "/api/circles/remove_member/"; //:circle_id
     public static GET_CIRCLES_BY_USER_ID: string = "/api/circles/by_user_id/"; //:id
     public static GET_CIRCLE_BY_ID: string = "/api/circles/"; //:circle_id
+    public static MAKE_CIRCLE_ADMIN: string = "/api/circles/make_admin/"; //:circle_id
 }

@@ -81,7 +81,6 @@ export class UpdateAddressPage {
       let mapElement = document.getElementById("map");
 
       LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
-
         let mapOption: GoogleMapOptions = {
           mapType: 'MAP_TYPE_ROADMAP',
           controls: {

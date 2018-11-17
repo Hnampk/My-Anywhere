@@ -1,9 +1,9 @@
+import { AnywhereRouter } from './../anywhere-router';
 import { User } from './../models/user';
 import { Circle } from './../models/circle';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserController } from '../user-controller/user-controller';
-import { AnywhereRouter } from '../anywhere-router';
 import { Events } from 'ionic-angular';
 
 import { map } from 'rxjs/operators';
@@ -77,6 +77,24 @@ export class CircleController {
     });
   }
 
+  removeMemberFromCircle(circle: Circle, member: User) {
+    return new Promise((res, rej) => {
+
+      // send request to create new circle
+      this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.REMOVE_MEMBER_FROM_CIRCLE + circle.id, { member_id: member.id })
+        .subscribe(response => {
+          // circle.addMember(member);
+          // console.log(circle);
+          console.log(response);
+          circle.removeMember(member);
+          res();
+        }, error => {
+          rej(error);
+        });
+    });
+  }
+
+
   /**
    * Get all circles of User
    * This will call getCirclesByUserId() function with current User's id
@@ -129,9 +147,32 @@ export class CircleController {
 
           res(resultCircle);
         }, error => {
-          console.log(error);
           rej(error);
         });
+    });
+  }
+
+  makeAdmin(memberId: string, circleId: string) {
+    return new Promise((res, rej) => {
+      // if (!this.mAppcontroller.hasInternet()) {
+      //   rej();
+      // }
+
+      let reqBody = {
+        member_id: memberId
+      }
+
+      this.http.patch(this.serviceUrl + AnywhereRouter.MAKE_CIRCLE_ADMIN + circleId, reqBody)
+        .subscribe(response => {
+          let circle = this.circles.find(circle => { return circle.id == circleId });
+          
+          circle.setAdmin(memberId);
+          
+          res();
+        }, error => {
+          rej(error);
+
+        })
     });
   }
 
@@ -169,12 +210,10 @@ export class CircleController {
                 circle.addMember(member);
               });
           });
-
           res(circle);
         }
       }
     });
-
   }
 
   /**

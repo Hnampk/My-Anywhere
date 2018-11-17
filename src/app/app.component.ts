@@ -73,9 +73,7 @@ export class MyApp {
           this.menuDatas.currentCircleId = this.menuDatas.circles[0].id;
 
           // emit event
-          setTimeout(() => {
-            this.onShowCircle(data.circle);
-          }, 1000);
+          this.onShowCircle(data.circle);
 
         }
         console.log('circles:updated', this.menuDatas);
@@ -110,7 +108,7 @@ export class MyApp {
 
   private onClickCircle(circle: Circle) {
     this.mSocketService.leaveCircleRoom(this.menuDatas.currentCircleId);
-    
+
     // emit event
     this.onShowCircle(circle);
     this.menu.close();
@@ -124,7 +122,11 @@ export class MyApp {
     this.mSocketService.joinCircleRoom(circle.id);
     // update current circle id
     this.menuDatas.currentCircleId = circle.id;
-    this.mCircleController.onShowCircle(circle);
+
+    // settimeout for the first time login
+    setTimeout(() => {
+      this.mCircleController.onShowCircle(circle);
+    }, 100);
   }
 }
 

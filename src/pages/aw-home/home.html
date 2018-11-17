@@ -50,8 +50,8 @@
                                 <ion-col class="name">
                                     {{ member.name }}
                                 </ion-col>
-                                <ion-col col-3 class="time">
-                                    {{ member.lastestLocation?.time | date:'shortTime' }}
+                                <ion-col class="time">
+                                    {{ member.lastestLocation?.time | date:isShortTime(member.lastestLocation?.time)?'shortTime':'short' }}
                                 </ion-col>
                             </ion-row>
                             <ion-row>

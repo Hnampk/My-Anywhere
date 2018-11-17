@@ -28,6 +28,7 @@
     "@ionic-native/status-bar": "~4.15.0",
     "@ionic/storage": "2.2.0",
     "cordova-android": "^7.1.1",
+    "cordova-browser": "5.0.4",
     "cordova-clipboard": "1.2.1",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-googlemaps": "^2.4.6",
@@ -72,7 +73,8 @@
       "cordova-clipboard": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "browser"
     ]
   }
 }

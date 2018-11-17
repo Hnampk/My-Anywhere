@@ -1,5 +1,6 @@
 import { LocationBase } from './location-base';
 import { Location } from './location';
+import { Marker, LatLng } from '@ionic-native/google-maps';
 
 export class User {
     name: string;
@@ -7,6 +8,7 @@ export class User {
     address: LocationBase;
     staticCode: string;
     lastestLocation: Location;
+    marker: Marker;
     isOnline: boolean = false;
 
     constructor(private _id: string, private _phonenumber: string) { }
@@ -20,7 +22,6 @@ export class User {
     }
 
     onResponseData(data) {
-        console.log(data);
         if (data.name) {
             this.name = data.name;
         }
@@ -48,7 +49,20 @@ export class User {
     }
 
     updateLastestLocation(location: Location){
-        console.log(location);
         this.lastestLocation.update(location);
+        this.updateMarkerPosition();
+    }
+
+    // Google Maps
+
+    setMarker(marker: Marker){
+        this.marker = marker;
+    }
+
+    updateMarkerPosition(){
+        if(this.marker){
+            this.marker.setPosition(new LatLng(this.lastestLocation.lat, this.lastestLocation.lng));
+            this.marker.set
+        }
     }
 }

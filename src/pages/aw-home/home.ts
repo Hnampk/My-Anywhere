@@ -3,10 +3,11 @@ import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, ActionSheetController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, ActionSheetController, Events, Platform } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { User } from '../../providers/models/user';
 import { Location } from '../../providers/models/location';
+import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon } from '@ionic-native/google-maps';
 
 @IonicPage()
 @Component({
@@ -14,6 +15,8 @@ import { Location } from '../../providers/models/location';
   templateUrl: 'home.html',
 })
 export class HomePage {
+
+  map: GoogleMap
 
   mTexts = {
     title: "Vòng kết nối",
@@ -54,6 +57,8 @@ export class HomePage {
   circle: Circle;
 
   constructor(public navCtrl: NavController,
+    public menu: MenuController,
+    public mPlatform: Platform,
     private events: Events,
     private mAuthenticationProvider: AuthenticationProvider,
     private mUserController: UserController,
@@ -62,6 +67,43 @@ export class HomePage {
     private mActionSheetController: ActionSheetController,
     private mSocketService: SocketService,
     public navParams: NavParams) {
+    menu.enable(true);
+  }
+
+  ngOnInit() {
+    this.events.subscribe("circles:show", data => {
+      this.showLoading();
+
+      this.mCircleController.getCircleByIdFromServer(data.circle.id)
+        .then((circle: Circle) => {
+          this.onUpdateCircleData(circle);
+
+          if (LocationService) {
+            LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
+              if (this.map) {
+                let cameraPosition: CameraPosition<ILatLng> = {
+                  target: location.latLng,
+                  duration: 300,
+                  zoom: 17
+                }
+
+                this.onSetupMap(circle);
+
+                this.map.animateCamera(cameraPosition)
+                  .then(() => {
+                    this.hideLoading();
+                  })
+                  .catch(e => {
+                    this.hideLoading();
+                  });
+              }
+            });
+          }
+          else {
+            this.hideLoading();
+          }
+        });
+    });
   }
 
   ionViewWillEnter() {
@@ -69,26 +111,6 @@ export class HomePage {
       console.log("Received new message", data);
     });
 
-    // this.mSocketService.updateMemberLocationEventReceived().subscribe(data => {
-    //   console.log("Received new member's location", data, this.circle);
-    //   // if (this.circle) {
-    //   //   this.circle.updateLocation(data.from, data.location);
-    //   // }
-    // });
-
-    this.events.subscribe("circles:show", data => {
-      let circle: Circle = data.circle;
-
-      console.log("Show Circle: ", circle);
-      this.showLoading();
-
-      this.mCircleController.getCircleByIdFromServer(data.circle.id)
-        .then((circle: Circle) => {
-          this.onUpdateCircleData(circle);
-
-          this.hideLoading();
-        });
-    });
   }
 
   ionViewDidLoad() {
@@ -101,6 +123,13 @@ export class HomePage {
   }
 
   async ionViewDidEnter() {
+
+    this.mPlatform.ready().then(() => {
+      if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
+        this.loadMap();
+      }
+    });
+
     // REMOVE THIS, for test
     // {
     //   // login
@@ -108,6 +137,55 @@ export class HomePage {
     //   // get circles from server
     //   await this.mCircleController.getMyCircles();
     // }
+  }
+
+  loadMap() {
+    if (!this.map) {
+      this.showLoading();
+
+      let mapElement = document.getElementById("map");
+
+      let mapOption: GoogleMapOptions = {
+        mapType: 'MAP_TYPE_ROADMAP',
+        controls: {
+          compass: true,
+          myLocation: true,
+          myLocationButton: true,
+          indoorPicker: false,
+          mapToolbar: false,
+          zoom: false
+        },
+        gestures: {
+          scroll: true,
+          tile: false,
+          zoom: true,
+          rotate: true
+        },
+        // camera: {
+        //   target: location.latLng,
+        //   zoom: 17,
+        //   duration: 1000
+        // },
+        preferences: {
+          zoom: {
+            minZoom: 10,
+            maxZoom: 19
+          },
+          building: false,
+        }
+      }
+
+      this.map = GoogleMaps.create(mapElement, mapOption);
+
+      this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+
+        this.hideLoading();
+        console.log("map is ready");
+      }).catch(e => {
+        this.hideLoading();
+        console.log("map is not ready", e);
+      });
+    }
   }
 
   showLoading() {
@@ -180,6 +258,41 @@ export class HomePage {
     this.mDatas.circleMembers = circle.getMembers();
   }
 
+  onSetupMap(circle: Circle) {
+    if (this.map) {
+      let members = circle.getMembers();
+
+      members.forEach(member => {
+        if (member.lastestLocation) {
+          if(!member.marker){
+            // let icon: MarkerIcon = {
+            //   url: "./assets/test.JPG",
+            //   size: {
+            //     width: 30,
+            //     height: 30
+            //   }
+            // };
+
+            let markerOptions: MarkerOptions = {
+              icon: "",//member.avatar,
+              position: new LatLng(member.lastestLocation.lat, member.lastestLocation.lng),
+            }
+  
+            this.map.addMarker(markerOptions).then(marker => {
+              member.setMarker(marker);
+            })
+            .catch(error=>{
+  
+            });
+          }
+          else{
+            member.updateMarkerPosition();
+          }
+        }
+      });
+    }
+  }
+
   onClickSendMessage() {
     try {
       this.mSocketService.sendMessage(this.mDatas.circleId);
@@ -194,5 +307,18 @@ export class HomePage {
     let circles = this.mCircleController.getCircles().map(circle => { return circle.id });
 
     this.mSocketService.updateMyLocation(newLocation, circles)
+  }
+
+  // 00:00 this day in milliseconds
+  private now() {
+    let now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return now.getTime();
+  }
+
+  // check if time is today or not
+  private isShortTime(time: number) {
+    return this.now() < time;
   }
 }

@@ -48,11 +48,16 @@
       <div class="member-item a3-container a3-items-center" *ngFor="let member of mDatas.circleMembers">
         <div class="member-avatar" [ngStyle]="{'background-image': 'url('+member.avatar+')'}"></div>
         <div class="member-name a3-flex-1">{{ member.name }}</div>
-        <div class="member-more">
+        <div class="member-more a3-container" *ngIf="!isAdmin(member)" (click)="onClickMemberMore($event, member)">
           <ion-icon name="ios-more-outline"></ion-icon>
+        </div>
+        <div class="admin-text a3-container" *ngIf="isAdmin(member)">
+          <span>Admin</span>
         </div>
       </div>
     </div>
   </div>
 
 </ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

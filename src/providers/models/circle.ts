@@ -24,6 +24,14 @@ export class Circle {
         this.members = [];
     }
 
+    setAdmin(adminId: string) {
+        this.admin_id = adminId;
+    }
+
+    getAdminId() {
+        return this.admin_id;
+    }
+
     /**
      * Update data for circle
      * @param data : {admin_id, members, name}
@@ -42,6 +50,11 @@ export class Circle {
 
     addMember(member: User) {
         this.members.push(member);
+    }
+
+    removeMember(member: User) {
+        let index = this.members.findIndex(element => { return member.id == element.id });
+        this.members.splice(index, 1);
     }
 
     updateLocation(memberId: string, location: Location) {
