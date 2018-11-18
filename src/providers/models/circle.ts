@@ -62,4 +62,12 @@ export class Circle {
 
         member.updateLastestLocation(location);
     }
+
+    hideMembersMarker(){
+        this.members.forEach(member=>{
+            if(member.marker){
+                member.marker.setVisible(false);
+            }
+        });
+    }
 }

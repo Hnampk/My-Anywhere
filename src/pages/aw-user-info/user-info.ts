@@ -1,3 +1,4 @@
+import { SocketService } from './../../providers/socket-service/socket-service';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
 import { UserController } from './../../providers/user-controller/user-controller';
@@ -44,6 +45,7 @@ export class UserInfoPage {
     private mAppController: AppController,
     private mUserController: UserController,
     private mAlertController: AlertController,
+    private socketService: SocketService,
     public navParams: NavParams) {
   }
 
@@ -103,6 +105,8 @@ export class UserInfoPage {
   onClickLogOut() {
     this.showLoading();
 
+    this.socketService.stopWatchPosition();
+    
     this.mAuthentication.logout()
       .then(() => {
         setTimeout(() => {

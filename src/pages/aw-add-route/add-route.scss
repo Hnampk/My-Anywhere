@@ -1,3 +1,157 @@
 page-add-route {
 
+    $center-size: 4px;
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    .main-content {
+        #map-route {
+            width: 100vw;
+            height: 60%;
+            background-color: lightgray;
+            position: relative;
+            .search-btn {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                padding: 10px 16px;
+                width: calc(100% - 20px);
+                background-color: rgba(255, 255, 255, .8);
+                border-radius: 10px;
+                font-size: 0.9em;
+                .search-icon {
+                    margin-right: 10px;
+                }
+            }
+            .center-mark {
+                position: absolute;
+                top: calc(50% - 2px);
+                left: calc(50vw - 2px);
+                width: $center-size;
+                height: $center-size;
+                background-color: red;
+            }
+        }
+        .rest {
+            box-shadow: 0px -1px 3px 0px lightgrey;
+            width: 100%;
+            position: relative;
+            background-color: #F5F5F5;
+            overflow: auto;
+            .route-container {
+                height: 80%;
+                overflow: auto;
+                background-color: white;
+                .step {
+                    padding-right: 20px;
+                    height: 50px;
+                    .icon-container {
+                        text-align: center;
+                        .route-connect-container {
+                            pointer-events: none;
+                            height: 100%;
+                            width: 100%;
+                            // margin-top: -25px;
+                            .route-connect {
+                                // height: calc(100% - 2rem);
+                                // width: 1px;
+                                // border: 1px dashed #8D8D8D;
+                                width: 1px;
+                                border: .8px dashed #8D8D8D;
+                                height: 94%;
+                            }
+                            .first{
+                                margin-top: 55%;
+                            }
+                            .last{
+                                margin-top: -55%;
+                            }
+                        }
+                        .icon-point {
+                            color: #47B1FF;
+                            font-size: 1.6rem;
+                            position: absolute;
+                            top: calc(50% - .8rem);
+                            left: calc(50% - .8rem);
+                            background-color: white;
+                        }
+                        .point {
+                            color: #F54E89 !important;
+                            font-size: 1rem;
+                            top: calc(50% - .5rem);
+                            left: calc(50% - .5rem);
+                        }
+                    }
+                    .info-container {
+                        font-size: .8em;
+                        .title {
+                            padding: 0;
+                            color: #8D8D8D;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .time {
+                            padding: 0;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            font-style: italic;
+                            color: #47B1FF;
+                            text-align: right;
+                        }
+                        .location {
+                            color: #464646;
+                            font-weight: 500;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+                .notice {
+                    text-align: center;
+                    font-size: 1.2em;
+                }
+            }
+            .btn-container {
+                height: 20%;
+                width: 100%;
+                .my-btn {
+                    width: 35%;
+                    margin: 0 4px;
+                }
+                .title {
+                    font-size: .9em;
+                    margin: 0 10px;
+                }
+                .cancel-btn {
+                    color: black;
+                }
+                .long-btn {
+                    width: 80%;
+                }
+            }
+        }
+    }
+    .my-item{
+        .item-inner{
+            border: none !important;
+            padding: 0 !important;
+            .input-wrapper ion-label{
+                margin: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+    }
 }

@@ -2,11 +2,14 @@ import { IonicPageModule } from 'ionic-angular';
 import { NgModule } from '@angular/core';
 import { AwLoadingComponent } from './aw-loading/aw-loading';
 import { AwVerifyOtpComponent } from './aw-verify-otp/aw-verify-otp';
+import { AwDatePickerComponent } from './aw-date-picker/aw-date-picker';
 @NgModule({
 	declarations: [AwLoadingComponent,
-    AwVerifyOtpComponent],
+    AwVerifyOtpComponent,
+    AwDatePickerComponent],
 	imports: [IonicPageModule],
 	exports: [AwLoadingComponent,
-    AwVerifyOtpComponent]
+    AwVerifyOtpComponent,
+    AwDatePickerComponent]
 })
 export class ComponentsModule {}

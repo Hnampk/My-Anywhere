@@ -183,7 +183,7 @@ export class UpdateAddressPage {
         this.navCtrl.push("CreateCirclePage", { isSignUp: true }, { animation: 'ios-transition' });
       }
       else{
-        this.navCtrl.setRoot("HomePage");
+        this.navCtrl.pop({ animation: 'ios-transition' });
       }
 
     }

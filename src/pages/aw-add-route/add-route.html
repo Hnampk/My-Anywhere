@@ -1,18 +1,150 @@
-<!--
-  Generated template for the AddRoutePage page.
+<ion-header class="m-header aw-header">
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-header>
-
-  <ion-navbar>
-    <ion-title>add-route</ion-title>
-  </ion-navbar>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button (click)="onClickClose()">
+        <ion-icon name="ios-arrow-back-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title (click)="onClickTitle()">
+      {{ mDatas.isOnAddStep? (mDatas.route.length==0?mTexts.titleStart: (mDatas.route.length==1?mTexts.titleEnd:
+      (mTexts.checkPoint + " " + (mDatas.route.length - 1)))):mTexts.title }}
+    </ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only class="more-btn" (click)="onClickMore()">
+        <ion-icon name="ios-more-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
 
 </ion-header>
 
+<ion-content no-bounce>
 
-<ion-content padding>
+  <div class="main-content a1-fill-parent a3-container a3-column">
+    <div id="map-route">
+      <div class="search-btn" *ngIf="mDatas.isOnAddStep" (click)="onClickSearch()">
+        <span class="search-icon">
+          <ion-icon name="ios-search-outline"></ion-icon>
+        </span>
+        <span>{{ mDatas.tempStep?.address ? mDatas.tempStep?.address : mTexts.search }}</span>
+      </div>
+      <div class="center-mark" *ngIf="mDatas.isOnAddStep"></div>
+    </div>
+    <div class="rest a3-flex-1">
+      <div class="route-container" #routeContainer>
+        <div *ngIf="mDatas.route.length>0">
+          <div *ngIf="!mDatas.isOnReorder">
+            <ion-list>
+              <ion-item-sliding #slidingItem *ngFor="let step of mDatas.route; first as f; last as l">
+                <ion-item class="my-item" no-padding>
+                  <ion-grid no-padding class="a1-fill-parent">
+                    <ion-row class="a1-fill-parent step">
+                      <ion-col col-2 class="icon-container a1-relative" (click)="onClickStep(step)">
+                        <div class="route-connect-container a3-container-center">
+                          <div class="route-connect" [class.first]="f" [class.last]="l && !f"></div>
+                        </div>
+                        <div>
+                          <ion-icon class="icon-point" [class.point]="!(f||l)" [name]="(f||l)?'aw-route-start':'aw-route-point'"></ion-icon>
+                        </div>
+                      </ion-col>
+                      <ion-col col-10 class="info-container a3-container a3-column a3-justify-center">
+                        <ion-row>
+                          <ion-col class="title" (click)="onClickStep(step)">
+                            {{ step.location.name }}
+                          </ion-col>
+                          <ion-col col-5 class="time" (click)="onClickChangeTime(step)">
+                            {{ step.location.time | date:'short' }}
+                          </ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <div class="location" (click)="onClickStep(step)">{{ step.location.address }}</div>
+                        </ion-row>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item-options side="left">
+                  <button ion-button (click)="onEditStep(slidingItem, step)">
+                    <ion-icon name="md-create"></ion-icon>
+                  </button>
+                </ion-item-options>
+                <ion-item-options side="right">
+                  <button ion-button color="danger" (click)="onClickDeleteStep(slidingItem, step)">
+                    <ion-icon name="ios-trash-outline"></ion-icon>
+                  </button>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ion-list>
+            <!-- <ion-grid no-padding>
+              <ion-row class="step" *ngFor="let step of mDatas.route; first as f; last as l" (press)="onPressStep(step)">
+                <ion-col col-2 class="icon-container a1-relative" (click)="onClickStep(step)">
+                  <div class="route-connect-container a3-container-center" *ngIf="!f">
+                    <div class="route-connect"></div>
+                  </div>
+                  <div>
+                    <ion-icon class="icon-point" [class.point]="!(f||l)" [name]="(f||l)?'aw-route-start':'aw-route-point'"></ion-icon>
+                  </div>
+                </ion-col>
+                <ion-col col-10 class="info-container a3-container a3-column a3-justify-center">
+                  <ion-row>
+                    <ion-col class="title" (click)="onClickStep(step)">
+                      {{ step.location.name }}
+                    </ion-col>
+                    <ion-col col-5 class="time" (click)="onClickChangeTime(step)">
+                      {{ step.location.time | date:'short' }}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <div class="location" (click)="onClickStep(step)">{{ step.location.address }}</div>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-grid> -->
+          </div>
+          <div *ngIf="mDatas.isOnReorder">
+            <ion-list reorder="true" (ionItemReorder)="reorderItems($event)">
+              <ion-item *ngFor="let step of mDatas.route" (click)="onClickStep(step)">{{ step.location.address }}</ion-item>
+            </ion-list>
+          </div>
+
+        </div>
+        <div class="a1-fill-parent" *ngIf="mDatas.route.length==0">
+          <div class="notice a3-container-center a1-fill-parent">
+            <div>{{ mTexts.empty }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-container">
+        <div class="a1-fill-parent" *ngIf="!mDatas.isOnReorder">
+          <div class="a1-fill-parent a3-container-center" *ngIf="!mDatas.isOnAddStep">
+            <div class="blue-btn my-btn" [class.long-btn]="mDatas.route.length==0" (click)="onClickAddStep()">
+              <span class="title">{{ mTexts.addButton | uppercase }}</span>
+            </div>
+            <div class="pink-btn my-btn" *ngIf="mDatas.route.length>0" (click)="onClickReorder()">
+              <span class="title">{{ mTexts.reorderButton | uppercase }}</span>
+            </div>
+          </div>
+          <div class="a1-fill-parent a3-container-center" *ngIf="mDatas.isOnAddStep">
+            <div class="blue-btn my-btn" (click)="onClickSaveStep()">
+              <span class="title">{{ mTexts.saveButton | uppercase }}</span>
+            </div>
+            <div class="white-btn my-btn a3-container-center cancel-btn" (click)="onClickCancel()">
+              <span class="title">{{ mTexts.cancelButton | uppercase }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="a1-fill-parent a3-container-center" *ngIf="mDatas.isOnReorder">
+          <div class="blue-btn long-btn" (click)="onClickDoneReorder()">
+            <span class="title">{{ mTexts.doneButton | uppercase }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </ion-content>
+
+<aw-date-picker *ngIf="mDatas.isShowingDatePicker" [time]="editingTime" [enableTime]="true" (cancel)="onCancelDatePicker()"
+  (done)="onDatePickerChanged($event)"></aw-date-picker>
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

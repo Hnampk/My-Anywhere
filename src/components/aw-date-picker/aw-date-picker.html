@@ -1,0 +1,43 @@
+<div class="backdrop" (click)="onClickBackdrop()">
+  <div class="date-picker-container" (click)="onClickContent()">
+      <div *ngIf="mViews.currentSlide==0" class="buttons-container a3-container a3-justify-end">
+          <div class="func-button" (click)="onClickCancel()">{{ mTexts.cancel }}</div>
+          <div class="func-button" *ngIf="isEnableTime" bold (click)="onClickNext()">{{ mTexts.next | uppercase }}</div>
+          <div class="func-button" *ngIf="!isEnableTime" bold (click)="onClickDone()">{{ mTexts.done | uppercase }}</div>
+      </div>
+      <div *ngIf="mViews.currentSlide==1" class="buttons-container">
+          <div class="func-button" style="float: left" (click)="onClickPrevious()">{{ mTexts.previous | uppercase }}</div>
+          <div class="func-button" style="float: right" bold (click)="onClickDone()">{{ mTexts.done | uppercase }}</div>
+          <div class="func-button" style="float: right" (click)="onClickCancel()">{{ mTexts.cancel }}</div>
+      </div>
+      <ion-slides (ionSlideDidChange)="slideChanged()">
+          <ion-slide>
+              <div class="date-time-container a3-container a3-justify-center">
+                  <div id="date" #date class="time-container" (scroll)="onScroll($event, mTexts.DATE)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event,date, mTexts.DATE)">
+                      <div *ngIf="!mViews.isLoading">
+                          <div class="time a3-container-center" *ngFor="let date of mDatas.dates">{{ date==0?"":date }}</div>
+                      </div>
+                  </div>
+                  <div id="month" #month class="time-container" (scroll)="onScroll($event, mTexts.MONTH)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event,month, mTexts.MONTH)">
+                      <div class="time a3-container-center" *ngFor="let month of mDatas.months">{{ month==0?"":month }}</div>
+                  </div>
+                  <div id="year" #year class="time-container" (scroll)="onScroll($event, mTexts.YEAR)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event,year, mTexts.YEAR)">
+                      <div class="time a3-container-center" *ngFor="let year of mDatas.years">{{ year==0?"":year }}</div>
+                  </div>
+                  <div class="current-value"></div>
+              </div>
+          </ion-slide>
+          <ion-slide>
+              <div class="date-time-container a3-container a3-justify-center">
+                  <div id="hour" #hour class="time-container" (scroll)="onScroll($event, mTexts.HOUR)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event,hour, mTexts.HOUR)">
+                      <div class="time a3-container-center" *ngFor="let hour of mDatas.hours">{{ hour==-1?"":hour }}</div>
+                  </div>
+                  <div id="minute" #minute class="time-container" (scroll)="onScroll($event, mTexts.MINUTE)" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event,minute, mTexts.MINUTE)">
+                      <div class="time a3-container-center" *ngFor="let minute of mDatas.minutes">{{ minute==-1?"":minute }}</div>
+                  </div>
+                  <div class="current-value"></div>
+              </div>
+          </ion-slide>
+      </ion-slides>
+  </div>
+</div>

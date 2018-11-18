@@ -18,12 +18,12 @@
                         </div>
                         <div class="text ">{{mTexts.savePassword}}</div>
                     </div>
-                    <div class="blue-btn" [class.white-btn]="form.invalid" style="margin-top: 24px" (click)="onClickLogin()">
+                    <button type="submit" class="blue-btn a1-width-100" [class.white-btn]="form.invalid" style="margin-top: 24px" (click)="onClickLogin()">
                         <span>{{mTexts.logIn | uppercase}}</span>
-                    </div>
-                    <div class="white-btn a1-margin-top" (click)="onClickSignUp()">
+                    </button>
+                    <button class="white-btn a1-margin-top a1-width-100" (click)="onClickSignUp()">
                         <span>{{mTexts.signUp | uppercase}}</span>
-                    </div>
+                    </button>
                 </form>
             </div>
         </div>

@@ -15,12 +15,12 @@
                             <input type="password" class="form-control" formControlName="confirm" [class.error]="confirm.touched && (confirm.invalid || passwordGroup.invalid)" [class.valid]="confirm.touched && passwordGroup.valid" placeholder="{{ mTexts.confirm }}">
                         </div>
                     </div>
-                    <div class="blue-btn" [class.white-btn]="form.invalid" style="margin-top: 30px" (click)="onClickSignUp()">
+                    <button class="blue-btn a1-width-100" type="submit" [class.white-btn]="form.invalid" style="margin-top: 30px" (click)="onClickSignUp()">
                         <span>{{mTexts.signUp | uppercase}}</span>
-                    </div>
-                    <div class="white-btn a1-margin-top" (click)="onClickLogin()">
+                    </button>
+                    <button class="white-btn a1-margin-top a1-width-100" (click)="onClickLogin()">
                         <span>{{mTexts.logIn | uppercase}}</span>
-                    </div>
+                    </button>
                 </form>
             </div>
         </div>

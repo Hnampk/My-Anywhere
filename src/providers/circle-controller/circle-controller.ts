@@ -165,9 +165,9 @@ export class CircleController {
       this.http.patch(this.serviceUrl + AnywhereRouter.MAKE_CIRCLE_ADMIN + circleId, reqBody)
         .subscribe(response => {
           let circle = this.circles.find(circle => { return circle.id == circleId });
-          
+
           circle.setAdmin(memberId);
-          
+
           res();
         }, error => {
           rej(error);
@@ -192,7 +192,7 @@ export class CircleController {
   }
 
   private updateCircle(circleData) {
-    return new Promise((res, rej) => {
+    return new Promise(async (res, rej) => {
       for (let i = 0; i < this.circles.length; i++) {
         if (this.circles[i].id == circleData._id) {
           let circle = this.circles[i];
@@ -200,19 +200,31 @@ export class CircleController {
           circle.onResponseData(circleData);
           circle.clearMembers();
           // update circle's members
-          circleData.members.forEach((memberId: string) => {
-            this.mUserController.getUserInfoById(memberId)
-              .then(userInfo => {
-                // update member info
-                let member = new User(memberId, userInfo['phonenumber']);
-                member.onResponseData(userInfo);
+          await this.updateMembers(circleData, circle);
 
-                circle.addMember(member);
-              });
-          });
           res(circle);
+          break;
         }
       }
+    });
+  }
+
+  private updateMembers(circleData, circle: Circle) {
+    return new Promise(async (res, rej) => {
+      let memberIds = <Array<string>>circleData.members;
+
+        for(let i = 0; i < memberIds.length; i++){
+          let memberId = memberIds[i];
+
+          let userInfo = await this.mUserController.getUserInfoById(memberId);
+
+          // update member info
+          let member = new User(memberId, userInfo['phonenumber']);
+          member.onResponseData(userInfo);
+
+          circle.addMember(member);
+        }
+      res();
     });
   }
 

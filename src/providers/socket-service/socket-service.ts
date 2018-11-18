@@ -85,6 +85,17 @@ export class SocketService {
       BackgroundGeolocation.on('error', () => {
         this.onStartingBackground = false;
       });
+
+      BackgroundGeolocation.on('background', () => {
+        console.log('[INFO] App is in background');
+        // you can also reconfigure service (changes will be applied immediately)
+        BackgroundGeolocation.configure({ debug: true });
+      });
+
+      BackgroundGeolocation.on('foreground', () => {
+        console.log('[INFO] App is in foreground');
+        BackgroundGeolocation.configure({ debug: false });
+      });
     });
   }
 

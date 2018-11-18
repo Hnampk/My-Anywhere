@@ -30,7 +30,7 @@ export class User {
             this.avatar = data.avatar;
         }
 
-        if(data.static_code){
+        if (data.static_code) {
             this.staticCode = data.static_code;
         }
 
@@ -42,27 +42,31 @@ export class User {
             }
         }
 
-        if(data.lastest_location){
+        if (data.lastest_location) {
             this.lastestLocation = new Location(data.lastest_location._lat, data.lastest_location._lng, data.lastest_location._address);
             this.lastestLocation.setTime(data.lastest_location.time);
         }
     }
 
-    updateLastestLocation(location: Location){
+    updateLastestLocation(location: Location) {
+        if (!this.lastestLocation) {
+            this.lastestLocation = new Location(null, null, null);
+        }
+
         this.lastestLocation.update(location);
         this.updateMarkerPosition();
     }
 
     // Google Maps
 
-    setMarker(marker: Marker){
+    setMarker(marker: Marker) {
         this.marker = marker;
     }
 
-    updateMarkerPosition(){
-        if(this.marker){
+    updateMarkerPosition() {
+        if (this.marker) {
             this.marker.setPosition(new LatLng(this.lastestLocation.lat, this.lastestLocation.lng));
-            this.marker.set
+            this.marker.setVisible(true);
         }
     }
 }

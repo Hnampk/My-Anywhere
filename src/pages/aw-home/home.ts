@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams, MenuController, ActionSheetControl
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { User } from '../../providers/models/user';
 import { Location } from '../../providers/models/location';
-import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon } from '@ionic-native/google-maps';
+import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon, Marker } from '@ionic-native/google-maps';
 
 @IonicPage()
 @Component({
@@ -71,7 +71,11 @@ export class HomePage {
 
   ngOnInit() {
     this.events.subscribe("circles:show", async data => {
+      console.log("SHOW: ", data.circle);
+
       this.showLoading();
+
+      if (this.circle) this.circle.hideMembersMarker();
 
       let circle = await this.mCircleController.getCircleByIdFromServer(data.circle.id)
       this.onUpdateCircleData(circle);
@@ -95,14 +99,17 @@ export class HomePage {
             });
         }
       })
-      .catch(e=>{
-        this.hideLoading();
-      });
+        .catch(e => {
+          console.log(e);
+          this.hideLoading();
+        });
     });
 
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
         this.loadMap();
+
+        this.mSocketService.startWatchPosition();
       }
     });
   }
@@ -114,10 +121,14 @@ export class HomePage {
   }
 
   ionViewWillLeave() {
+    console.log("leave ne```````````````````````");
+
+    this.menu.enable(false);
     this.events.unsubscribe("circles:show");
   }
 
   async ionViewDidEnter() {
+    this.menu.enable(true);
     // REMOVE THIS, for test
     // {
     //   // login
@@ -166,7 +177,6 @@ export class HomePage {
       this.map = GoogleMaps.create(mapElement, mapOption);
 
       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-
         this.hideLoading();
         console.log("map is ready");
       }).catch(e => {
@@ -198,7 +208,7 @@ export class HomePage {
       buttons: [{
         text: "Tạo mới lộ trình/địa điểm",
         handler: () => {
-          this.navCtrl.push("AwCreateRoutePage", { animation: 'ios-transition' });
+          this.navCtrl.push("AddRoutePage", { animation: 'ios-transition' });
         }
       }, {
         text: this.mDatas.isOnDetail ? "Vị trí thành viên" : "Lộ trình thành viên",
@@ -248,19 +258,21 @@ export class HomePage {
 
   onSetupMap(circle: Circle) {
     if (this.map) {
-      let members = circle.getMembers();
+      console.log(this.mDatas.circleMembers.length);
+      for (let i = 0; i < this.mDatas.circleMembers.length; i++) {
+        let member = this.mDatas.circleMembers[i];
 
-      members.forEach(member => {
-        if (member.lastestLocation) {
-          if (!member.marker) {
-            // let icon: MarkerIcon = {
-            //   url: "./assets/test.JPG",
-            //   size: {
-            //     width: 30,
-            //     height: 30
-            //   }
-            // };
+        if (!member.marker) {
+          // let icon: MarkerIcon = {
+          //   url: "./assets/test.JPG",
+          //   size: {
+          //     width: 30,
+          //     height: 30
+          //   }
+          // };
 
+          if (member.lastestLocation) {
+            // Add member marker
             let markerOptions: MarkerOptions = {
               icon: "",//member.avatar,
               position: new LatLng(member.lastestLocation.lat, member.lastestLocation.lng),
@@ -270,14 +282,28 @@ export class HomePage {
               member.setMarker(marker);
             })
               .catch(error => {
-
+                console.log(error);
               });
           }
           else {
-            member.updateMarkerPosition();
+            let markerOptions: MarkerOptions = {
+              icon: "",//member.avatar,
+              position: new LatLng(0, 0)
+            }
+
+            this.map.addMarker(markerOptions).then((marker: Marker) => {
+              marker.setVisible(false);
+              member.setMarker(marker);
+            })
+              .catch(error => {
+                console.log(error);
+              });
           }
         }
-      });
+        else {
+          member.updateMarkerPosition();
+        }
+      }
     }
   }
 
@@ -291,7 +317,7 @@ export class HomePage {
 
   onClickChat() {
     console.log("onClickChat");
-    this.mSocketService.startWatchPosition();
+    // this.mSocketService.startWatchPosition();
 
 
     // let newLocation = new Location(20.992590, 105.843700, "135 Nguyen An Ninh, Tuong Mai, Hoang Mai, Ha Noi");
