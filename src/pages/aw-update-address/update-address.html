@@ -19,7 +19,7 @@
           <div class="progress"></div>
       </div>
 
-      <div id="map">
+      <div id="map-update">
           <div class="search-btn" (click)="onClickSearch()">
               <span class="search-icon"><ion-icon name="ios-search-outline"></ion-icon></span>
               <span>{{ mDatas.address ? mDatas.address : mTexts.search }}</span>
@@ -40,3 +40,5 @@
   </div>
 
 </ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

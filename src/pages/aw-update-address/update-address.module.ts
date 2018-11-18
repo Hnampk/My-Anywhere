@@ -1,3 +1,4 @@
+import { ComponentsModule } from './../../components/components.module';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { UpdateAddressPage } from './update-address';
@@ -8,6 +9,7 @@ import { UpdateAddressPage } from './update-address';
   ],
   imports: [
     IonicPageModule.forChild(UpdateAddressPage),
+    ComponentsModule
   ],
 })
 export class UpdateAddressPageModule {}

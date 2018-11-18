@@ -33,11 +33,13 @@ export class UpdateAddressPage {
   mDatas: {
     address: string,
     location: ILatLng,
-    isSignUp: boolean
+    isSignUp: boolean,
+    onLoading: boolean
   } = {
       address: "",
       location: null,
-      isSignUp: false
+      isSignUp: true,
+      onLoading: false
     }
 
   constructor(public navCtrl: NavController,
@@ -62,7 +64,7 @@ export class UpdateAddressPage {
     }
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
         this.loadMap();
@@ -73,12 +75,13 @@ export class UpdateAddressPage {
   ionViewDidLeave() {
     if (this.map) {
       this.map.remove();
+      this.map = null;
     }
   }
 
   loadMap() {
     if (!this.map) {
-      let mapElement = document.getElementById("map");
+      let mapElement = document.getElementById("map-update");
 
       LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
         let mapOption: GoogleMapOptions = {
@@ -123,6 +126,14 @@ export class UpdateAddressPage {
     }
   }
 
+  showLoading() {
+    this.mDatas.onLoading = true;
+  }
+
+  hideLoading() {
+    this.mDatas.onLoading = false;
+  }
+
   onMapViewChanged(location: ILatLng) {
     this.mMapServices.requestAddress(location).then((address: string) => {
       if (address && address.length > 0) {
@@ -153,7 +164,8 @@ export class UpdateAddressPage {
   }
 
   async onClickNext() {
-    let userId = this.mUserController.getOwner().id;
+    this.showLoading();
+
     let newAddress: LocationBase = {
       lat: this.mDatas.location.lat,
       lng: this.mDatas.location.lng,
@@ -165,10 +177,14 @@ export class UpdateAddressPage {
       // let userInfo = await this.mUserController.getUserInfo(userId);
       // console.log(userInfo);
       // this.mUserController.getOwner().onResponseData(userInfo);
+      this.hideLoading();
+
       if (this.mDatas.isSignUp) {
         this.navCtrl.push("CreateCirclePage", { isSignUp: true }, { animation: 'ios-transition' });
       }
-      this.navCtrl.setRoot("HomePage");
+      else{
+        this.navCtrl.setRoot("HomePage");
+      }
 
     }
     catch (error) {

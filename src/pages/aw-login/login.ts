@@ -86,7 +86,7 @@ export class LoginPage {
         // get circles from server
         await this.mCircleController.getMyCircles();
 
-        this.navCtrl.setRoot("HomePage");
+        await this.navCtrl.setRoot("HomePage");
 
         this.mAppController.showToast("Đăng nhập thành công!");
         // if (!this.mAuthenticationProvider.hasAddress()) {
