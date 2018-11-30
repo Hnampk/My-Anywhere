@@ -6,6 +6,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, ToastController, MenuController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
+import { TracesProvider } from '../../providers/traces/traces';
+import { EthersProvider } from '../../providers/ethers/ethers';
 
 @IonicPage()
 @Component({
@@ -40,13 +42,21 @@ export class LoginPage {
     private mAppController: AppController,
     private mAuthenticationProvider: AuthenticationProvider,
     private mCircleController: CircleController,
-    private mToastController: ToastController,
     private mMenuController: MenuController) {
   }
 
   ionViewDidLoad() {
     this.mMenuController.enable(false);
   }
+
+  // async onClickTitle() {
+  //   let result = await this.tracesProvider.getTrace("0xd5f38edc368b04bcc7e1ed15dc17ac781b79d47a", "11282018");
+    
+  //   result.map(element => {
+  //     console.log(new Date(element.time))
+  //   });
+  //   console.log(result);
+  // }
 
   get phonenumber() {
     return this.form.get('phonenumber');

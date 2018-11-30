@@ -60,12 +60,13 @@ export class Circle {
     updateLocation(memberId: string, location: Location) {
         let member = this.members.find(member => { return member.id == memberId });
 
-        member.updateLastestLocation(location);
+        if (member)
+            member.updateLastestLocation(location);
     }
 
-    hideMembersMarker(){
-        this.members.forEach(member=>{
-            if(member.marker){
+    hideMembersMarker() {
+        this.members.forEach(member => {
+            if (member.marker) {
                 member.marker.setVisible(false);
             }
         });

@@ -1,6 +1,6 @@
+import { MapProvider } from './../../providers/map/map';
 import { LocationBase } from './../../providers/models/location-base';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
-import { MapServices } from './../../providers/map-services/map-services';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, ModalController } from 'ionic-angular';
@@ -44,7 +44,7 @@ export class UpdateAddressPage {
 
   constructor(public navCtrl: NavController,
     statusBar: StatusBar,
-    private mMapServices: MapServices,
+    private mapProvider: MapProvider,
     private mChangeDetectorRef: ChangeDetectorRef,
     private mPlatform: Platform,
     private mModalController: ModalController,
@@ -135,7 +135,7 @@ export class UpdateAddressPage {
   }
 
   onMapViewChanged(location: ILatLng) {
-    this.mMapServices.requestAddress(location).then((address: string) => {
+    this.mapProvider.requestAddress(location).then((address: string) => {
       if (address && address.length > 0) {
         this.setData(address, this.map.getCameraTarget());
       }
@@ -202,7 +202,7 @@ export class UpdateAddressPage {
     modal.onWillDismiss((data) => {
       this.resetData();
       if (data && data['address']) {
-        this.mMapServices.requestLatLng(data['address']).then((location: ILatLng) => {
+        this.mapProvider.requestLatLng(data['address']).then((location: ILatLng) => {
           this.setData(data['address'], location, true);
         });
       }

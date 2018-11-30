@@ -1,4 +1,4 @@
-import { SocketService } from './../providers/socket-service/socket-service';
+import { SocketProvider } from './../providers/socket/socket';
 import { Circle } from './../providers/models/circle';
 import { CircleController } from './../providers/circle-controller/circle-controller';
 import { UserController } from './../providers/user-controller/user-controller';
@@ -48,15 +48,16 @@ export class MyApp {
     private events: Events,
     private mUserController: UserController,
     private mCircleController: CircleController,
-    private mSocketService: SocketService,
+    private socketProvider: SocketProvider,
     splashScreen: SplashScreen) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      if (statusBar.isVisible) {
-        statusBar.hide();
-      }
+      if (platform.is('ios'))
+        statusBar.styleDefault();
+      else
+        statusBar.styleLightContent();
+
       splashScreen.hide();
 
       events.subscribe('user:updated', () => {
@@ -107,7 +108,7 @@ export class MyApp {
   }
 
   private onClickCircle(circle: Circle) {
-    this.mSocketService.leaveCircleRoom(this.menuDatas.currentCircleId, this.mUserController.getOwner().id);
+    this.socketProvider.leaveCircleRoom(this.menuDatas.currentCircleId, this.mUserController.getOwner().id);
 
     // emit event
     this.onShowCircle(circle);
@@ -119,7 +120,7 @@ export class MyApp {
    * @param circle 
    */
   private onShowCircle(circle: Circle) {
-    this.mSocketService.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
+    this.socketProvider.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
     // update current circle id
     this.menuDatas.currentCircleId = circle.id;
 

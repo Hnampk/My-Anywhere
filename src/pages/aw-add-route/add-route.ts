@@ -1,4 +1,5 @@
-import { MapServices } from './../../providers/map-services/map-services';
+import { CircleController } from './../../providers/circle-controller/circle-controller';
+import { MapProvider } from './../../providers/map/map';
 import { LatLng, CameraPosition, MarkerIcon } from '@ionic-native/google-maps';
 
 import { Component, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
@@ -29,27 +30,9 @@ import {
   Polyline
 } from '@ionic-native/google-maps';
 import { Location } from '../../providers/models/location';
+import { LocationWithMarker, Route } from '../../providers/models/route';
+import { RouteController } from '../../providers/route-controller/route-controller';
 
-export class LocationWithMarker {
-  private _location: Location;
-  private _marker: Marker;
-
-  constructor(location: Location) {
-    this._location = location;
-  }
-
-  get location() {
-    return this._location;
-  }
-
-  set marker(marker: Marker) {
-    this._marker = marker;
-  }
-
-  get marker() {
-    return this._marker;
-  }
-}
 
 @IonicPage()
 @Component({
@@ -98,41 +81,14 @@ export class AddRoutePage {
     private mModalController: ModalController,
     private mAlertController: AlertController,
     private mMenuController: MenuController,
-    private mapServices: MapServices,
+    private mapProvider: MapProvider,
     private mApp: App,
+    private circleController: CircleController,
+    private routeController: RouteController,
     private mActionSheetController: ActionSheetController,
     private mChangeDetectorRef: ChangeDetectorRef,
     // private mAwModule: AwModule,
-    public navParams: NavParams) {
-
-    // let location1 = new Location(0, 0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    // location1.setTime(1526831580000);
-    // let a = new LocationWithMarker(location1);
-
-    // let location2 = new Location(0, 0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    // location2.setTime(1526831580000);
-    // let b = new LocationWithMarker(location1);
-
-    // let location3 = new Location(0, 0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    // location3.setTime(1526831580000);
-    // let c = new LocationWithMarker(location1);
-
-    // let location4 = new Location(0, 0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    // location4.setTime(1526831580000);
-    // let d = new LocationWithMarker(location1);
-
-    // let location5 = new Location(0, 0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    // location5.setTime(1526831580000);
-    // let e = new LocationWithMarker(location1);
-
-    // this.mDatas.route.push(a);
-    // this.mDatas.route.push(b);
-    // this.mDatas.route.push(c);
-    // this.mDatas.route.push(d);
-    // this.mDatas.route.push(e);
-
-
-  }
+    public navParams: NavParams) { }
 
   ionViewDidEnter() {
     this.mPlatform.ready().then(() => {
@@ -338,7 +294,7 @@ export class AddRoutePage {
   }
 
   onMapViewChanged(location: ILatLng) {
-    this.mapServices.requestAddress(location).then((address: string) => {
+    this.mapProvider.requestAddress(location).then((address: string) => {
       if (address && address.length > 0) {
         this.setData(address, this.map.getCameraTarget());
       }
@@ -367,6 +323,11 @@ export class AddRoutePage {
   onSaveRoute() {
     console.log(this.mDatas.route);
 
+    let route = new Route();
+    route.onResponseData(this.mDatas.route);
+    route.cỉcleId = this.circleController.getCurrentCircle().id;
+
+    this.routeController.createRoute(route);
   }
 
   onShowDatePicker() {
@@ -441,10 +402,11 @@ export class AddRoutePage {
 
     // clear map
     this.hideRouteOnMap();
-    this.removeStepsOnMap();
+    this.hideStepsOnMap();
 
     // remove step from array
     let index = this.mDatas.route.indexOf(step);
+    step.marker.remove();
     this.mDatas.route.splice(index, 1);
 
     // show new data
@@ -462,7 +424,7 @@ export class AddRoutePage {
     modal.onWillDismiss((data) => {
       this.resetTempStep();
       if (data && data['address']) {
-        this.mapServices.requestLatLng(data['address']).then((location: ILatLng) => {
+        this.mapProvider.requestLatLng(data['address']).then((location: ILatLng) => {
           this.setData(data['address'], location, true);
         });
       }
@@ -511,7 +473,7 @@ export class AddRoutePage {
     this.mDatas.isOnReorder = false;
     this.scrollRouteToTop();
 
-    this.removeStepsOnMap();
+    this.hideStepsOnMap();
     this.showStepsOnMap(this.mDatas.route);
     this.showRouteOnMap(this.mDatas.route);
   }

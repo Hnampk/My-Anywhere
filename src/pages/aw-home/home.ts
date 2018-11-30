@@ -1,4 +1,7 @@
-import { SocketService } from './../../providers/socket-service/socket-service';
+import { TracesProvider } from './../../providers/traces/traces';
+import { SocketProvider } from './../../providers/socket/socket';
+import { LocationProvider } from './../../providers/location/location';
+import { BackgroundProvider } from './../../providers/background/background';
 import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
@@ -8,6 +11,9 @@ import { AuthenticationProvider } from '../../providers/authentication/authentic
 import { User } from '../../providers/models/user';
 import { Location } from '../../providers/models/location';
 import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon, Marker } from '@ionic-native/google-maps';
+import { Geolocation, GeolocationOptions, Geoposition } from '@ionic-native/geolocation';
+import { EthersProvider } from '../../providers/ethers/ethers';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -60,13 +66,19 @@ export class HomePage {
     public menu: MenuController,
     public mPlatform: Platform,
     private events: Events,
+    private storage: Storage,
+    private locationProvider: LocationProvider,
+    private tracesProvider: TracesProvider,
+    private ethersProvider: EthersProvider,
     private mAuthenticationProvider: AuthenticationProvider,
-    private mUserController: UserController,
+    private backgroundProvider: BackgroundProvider,
+    private userController: UserController,
     private mCircleController: CircleController,
     private mActionSheetController: ActionSheetController,
-    private mSocketService: SocketService,
+    private socketProvider: SocketProvider,
     public navParams: NavParams) {
     menu.enable(true);
+    ethersProvider.createWallet("rose suit over suffer bubble cinnamon gossip simple wink way sock cloud");
   }
 
   ngOnInit() {
@@ -78,6 +90,8 @@ export class HomePage {
       if (this.circle) this.circle.hideMembersMarker();
 
       let circle = await this.mCircleController.getCircleByIdFromServer(data.circle.id)
+      this.mCircleController.setCurrentCircle(circle);
+
       this.onUpdateCircleData(circle);
 
       LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
@@ -107,15 +121,20 @@ export class HomePage {
 
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
+        /**
+         * TODO: 
+         * - Load Googlemaps
+         * - Enable background service
+         * - Start update position realtime
+         * - Start update history move
+         */
         this.loadMap();
-
-        this.mSocketService.startWatchPosition();
       }
     });
   }
 
   ionViewWillEnter() {
-    this.mSocketService.newMessageReceived().subscribe(data => {
+    this.socketProvider.newMessageReceived().subscribe(data => {
       console.log("Received new message", data);
     });
   }
@@ -177,6 +196,10 @@ export class HomePage {
       this.map = GoogleMaps.create(mapElement, mapOption);
 
       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+        setTimeout(() => {
+          this.backgroundProvider.startWatchPosition();
+          this.tracesProvider.startTrace();
+        }, 2000);
         this.hideLoading();
         console.log("map is ready");
       }).catch(e => {
@@ -309,27 +332,22 @@ export class HomePage {
 
   onClickSendMessage() {
     try {
-      this.mSocketService.sendMessage(this.mDatas.circleId, this.mUserController.getOwner().id);
+      this.socketProvider.sendMessage(this.mDatas.circleId, this.userController.getOwner().id);
     } catch (e) {
       console.log(e);
     }
   }
 
   onClickChat() {
-    console.log("onClickChat");
-    // this.mSocketService.startWatchPosition();
-
-
-    // let newLocation = new Location(20.992590, 105.843700, "135 Nguyen An Ninh, Tuong Mai, Hoang Mai, Ha Noi");
-    // newLocation.setTime(Date.now());
-    // let circles = this.mCircleController.getCircles().map(circle => { return circle.id });
-
-    // this.mSocketService.updateMyLocation(newLocation, circles, this.mUserController.getOwner().id)
+    // console.log("onClickChat");
+    this.storage.get("steps-" + this.userController.getOwner().id).then(data => {
+      console.log("steps: ", data);
+      
+    });
   }
 
   onClickTitle() {
     console.log("onClickTitle");
-    this.mSocketService.stopWatchPosition();
   }
 
   // 00:00 this day in milliseconds

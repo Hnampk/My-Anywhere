@@ -28,6 +28,9 @@ export class Location implements LocationBase{
     get address(){
         return this._address;
     }
+    set address(address: string){
+        this._address = address;
+    }
 
     setTime(time: number){
         this.time = time;

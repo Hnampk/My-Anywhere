@@ -103,8 +103,10 @@ export class AddMemberPage {
       else {
         this.mDatas.input = "";
         this.mDatas.elements.forEach(element => {
+          element.blur();
           this.mDatas.input += element.value;
         });
+
 
         this.onRequestFindUser(this.mDatas.input);;
       }
@@ -112,6 +114,7 @@ export class AddMemberPage {
   }
 
   async onRequestFindUser(code: string) {
+
     console.log(code);
     this.showLoading();
 

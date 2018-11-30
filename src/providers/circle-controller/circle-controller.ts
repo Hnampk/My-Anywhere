@@ -1,3 +1,4 @@
+import { SocketProvider } from './../socket/socket';
 import { AnywhereRouter } from './../anywhere-router';
 import { User } from './../models/user';
 import { Circle } from './../models/circle';
@@ -15,11 +16,23 @@ export class CircleController {
    * Locally store all the Circles of User
    */
   private circles: Array<Circle> = [];
+  private currentCircle: Circle;
 
   constructor(public http: HttpClient,
     private mUserController: UserController,
+    private socketProvider: SocketProvider,
     private events: Events
-  ) { }
+  ) {
+    this.socketProvider.updateMemberLocationEventReceived().subscribe(data => {
+      console.log("Received new member's location", data);
+
+      let targetCircle = this.getCircleById(data.circle_id);
+      let memberId = data.from;
+      let newLocation = data.location;
+
+      targetCircle.updateLocation(memberId, newLocation);
+    });
+  }
 
   clearCircles() {
     this.circles = [];
@@ -31,6 +44,49 @@ export class CircleController {
 
   getCircleById(circleId: string) {
     return this.circles.find(circle => { return circle.id == circleId });
+  }
+
+  setCurrentCircle(circle: Circle) {
+    this.currentCircle = circle;
+  }
+
+  getCurrentCircle(){
+    return this.currentCircle;
+  }
+
+  joinCurrentCircleRoom(){
+    this.socketProvider.joinCircleRoom(this.currentCircle.id, this.mUserController.getOwner().id);
+  }
+
+  leaveCurrentCircleRoom(){
+    this.socketProvider.leaveCircleRoom(this.currentCircle.id, this.mUserController.getOwner().id);
+  }
+
+  joinAllCircleRooms() {
+    // this.socketProvider.connect();
+    for (let i = 0; i < this.circles.length; i++) {
+      let circle = this.circles[i];
+      this.socketProvider.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
+    }
+  }
+
+  leaveAllCircleRooms(){
+    for (let i = 0; i < this.circles.length; i++) {
+      let circle = this.circles[i];
+      this.socketProvider.leaveCircleRoom(circle.id, this.mUserController.getOwner().id);
+    }
+    // this.socketProvider.disconnect();
+  }
+
+  // update for home view
+  updateOwnerDataInCurrentCircle(name: string, avatar?: string) {
+    let owner = this.currentCircle.getMembers().find(member => { return member.id == this.mUserController.getOwner().id });
+
+    owner.name = name;
+
+    if (avatar) {
+      owner.avatar = avatar;
+    }
   }
 
   /**
@@ -213,17 +269,17 @@ export class CircleController {
     return new Promise(async (res, rej) => {
       let memberIds = <Array<string>>circleData.members;
 
-        for(let i = 0; i < memberIds.length; i++){
-          let memberId = memberIds[i];
+      for (let i = 0; i < memberIds.length; i++) {
+        let memberId = memberIds[i];
 
-          let userInfo = await this.mUserController.getUserInfoById(memberId);
+        let userInfo = await this.mUserController.getUserInfoById(memberId);
 
-          // update member info
-          let member = new User(memberId, userInfo['phonenumber']);
-          member.onResponseData(userInfo);
+        // update member info
+        let member = new User(memberId, userInfo['phonenumber']);
+        member.onResponseData(userInfo);
 
-          circle.addMember(member);
-        }
+        circle.addMember(member);
+      }
       res();
     });
   }

@@ -1,3 +1,5 @@
+import { PowerManagement } from '@ionic-native/power-management';
+import { BackgroundMode } from '@ionic-native/background-mode';
 import { Clipboard } from '@ionic-native/clipboard';
 import { AuthInterceptor } from './../providers/authentication/auth-interceptor';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,14 +12,22 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { IonicStorageModule } from '@ionic/storage';
+import { HTTP } from '@ionic-native/http';
+
 
 import { MyApp } from './app.component';
 import { AuthenticationProvider } from '../providers/authentication/authentication';
-import { MapServices } from '../providers/map-services/map-services';
 import { UserController } from '../providers/user-controller/user-controller';
 import { AppController } from '../providers/app-controller/app-controller';
 import { CircleController } from '../providers/circle-controller/circle-controller';
-import { SocketService } from '../providers/socket-service/socket-service';
+import { BackgroundProvider } from '../providers/background/background';
+import { LocationProvider } from '../providers/location/location';
+import { MapProvider } from '../providers/map/map';
+import { SocketProvider } from '../providers/socket/socket';
+import { EthersProvider } from '../providers/ethers/ethers';
+import { TracesProvider } from '../providers/traces/traces';
+import { RouteController } from '../providers/route-controller/route-controller';
 
 @NgModule({
   declarations: [
@@ -26,6 +36,7 @@ import { SocketService } from '../providers/socket-service/socket-service';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot(),
     FormsModule,
     HttpClientModule
   ],
@@ -39,15 +50,23 @@ import { SocketService } from '../providers/socket-service/socket-service';
     Network,
     GoogleMaps,
     Geolocation,
+    BackgroundMode,
+    PowerManagement,
+    HTTP,
     Clipboard,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     AuthenticationProvider,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    MapServices,
     UserController,
     AppController,
     CircleController,
-    SocketService,
+    BackgroundProvider,
+    LocationProvider,
+    MapProvider,
+    SocketProvider,
+    EthersProvider,
+    TracesProvider,
+    RouteController,
   ]
 })
 export class AppModule { }

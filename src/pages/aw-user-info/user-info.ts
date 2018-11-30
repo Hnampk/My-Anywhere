@@ -1,4 +1,5 @@
-import { SocketService } from './../../providers/socket-service/socket-service';
+import { LocationProvider } from './../../providers/location/location';
+import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
 import { UserController } from './../../providers/user-controller/user-controller';
@@ -41,11 +42,12 @@ export class UserInfoPage {
 
   constructor(public navCtrl: NavController,
     private mClipboard: Clipboard,
-    private mAuthentication: AuthenticationProvider,
+    private authentication: AuthenticationProvider,
+    private locationProvider: LocationProvider,
     private mAppController: AppController,
     private mUserController: UserController,
+    private mCircleController: CircleController,
     private mAlertController: AlertController,
-    private socketService: SocketService,
     public navParams: NavParams) {
   }
 
@@ -62,7 +64,7 @@ export class UserInfoPage {
   }
 
   async onClickClose() {
-    if(this.mDatas.modified){
+    if (this.mDatas.modified) {
       await this.onModification();
     }
     this.navCtrl.pop({ animation: 'ios-transition' });
@@ -105,9 +107,10 @@ export class UserInfoPage {
   onClickLogOut() {
     this.showLoading();
 
-    this.socketService.stopWatchPosition();
+    this.locationProvider.stopWatchPosition();
     
-    this.mAuthentication.logout()
+
+    this.authentication.logout()
       .then(() => {
         setTimeout(() => {
           this.hideLoading();
@@ -182,13 +185,16 @@ export class UserInfoPage {
             handler: async data => {
               this.showLoading();
 
-              if(this.mDatas.imageFile){
+              if (this.mDatas.imageFile) {
                 // update userinfo
-                await this.mUserController.updateUserInfo(this.mDatas.user.name, this.mDatas.imageFile);
+                let response = await this.mUserController.updateUserInfo(this.mDatas.user.name, this.mDatas.imageFile);
+                
+                if(response) this.mCircleController.updateOwnerDataInCurrentCircle(response.name, response.avatar);
               }
-              else{
+              else {
                 // update displayname
-                await this.mUserController.updateDisplayName(this.mDatas.user.name);
+                let response = await this.mUserController.updateDisplayName(this.mDatas.user.name);
+                if(response) this.mCircleController.updateOwnerDataInCurrentCircle(response.name);
               }
 
               this.updateOwnerData();

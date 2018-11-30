@@ -1,4 +1,5 @@
-import { MapServices } from './../map-services/map-services';
+import { MapProvider } from './../map/map';
+import { CircleController } from './../circle-controller/circle-controller';
 import { Observable } from 'rxjs/Observable';
 import { User } from './../models/user';
 import { AppController } from './../app-controller/app-controller';
@@ -10,7 +11,6 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Events } from 'ionic-angular';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
-import { SocketService } from '../socket-service/socket-service';
 import { Location } from '../models/location';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class UserController {
   constructor(public http: HttpClient,
     private events: Events,
     private geolocation: Geolocation,
-    private mMapServices: MapServices,
+    private mapProvider: MapProvider,
     private mAppcontroller: AppController) { }
 
   getOwner() {
@@ -96,9 +96,9 @@ export class UserController {
       //   rej();
       // }
 
-      this.http.get<{ message: string, result: Array<any> }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_STATIC_CODE + staticCode)
+      this.http.get<{ message: string, users: Array<any> }>(this.serviceUrl + AnywhereRouter.FIND_USER_BY_STATIC_CODE + staticCode)
         .pipe(map(result => {
-          return result.result
+          return result.users
         }))
         .subscribe(response => {
           res(response);
@@ -145,7 +145,7 @@ export class UserController {
    * @param name 
    */
   updateDisplayName(name: string) {
-    return new Promise((res, rej) => {
+    return new Promise<{ name: string }>((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
       // }
@@ -159,7 +159,7 @@ export class UserController {
           this.owner.name = name;
           this.onUserUpdated();
 
-          res();
+          res({ name });
         }, error => {
           console.log(error);
           this.mAppcontroller.onConnectionFailure();
@@ -174,7 +174,7 @@ export class UserController {
    * @param avatarImage 
    */
   updateUserInfo(name: string, avatarImage: File) {
-    return new Promise((res, rej) => {
+    return new Promise<{ name: string, avatar: string }>((res, rej) => {
       // if (!this.mAppcontroller.hasInternet()) {
       //   rej();
       // }
@@ -184,14 +184,14 @@ export class UserController {
       userData.append('name', name);
       userData.append('image', avatarImage, this.owner.phonenumber);
 
-      this.http.patch<{ imagePath: string }>(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, userData)
+      this.http.patch<{ image_path: string }>(this.serviceUrl + AnywhereRouter.UPDATE_USERINFO + this.owner.id, userData)
         .subscribe(response => {
           this.owner.name = name;
-          this.owner.avatar = response.imagePath;
+          this.owner.avatar = response.image_path;
 
           this.onUserUpdated();
 
-          res();
+          res({ name, avatar: response.image_path });
         }, error => {
           console.log(error);
           this.mAppcontroller.onConnectionFailure();
