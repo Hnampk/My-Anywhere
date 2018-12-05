@@ -59,15 +59,15 @@ export class MapProvider {
     try {
       let response = await this.http.get("https://maps.googleapis.com/maps/api/geocode/json", { "latlng": latlng, "key": "AIzaSyCCxm27bUK2yZNPqALoGai2vC7NXPiZCYk" }, {});
 
-      if(response){
+      if (response) {
         let jsonData = JSON.parse(response.data);
 
         if (jsonData && jsonData.results.length > 0) {
-            let result = jsonData.results[0]
-            return result.formatted_address;
+          let result = jsonData.results[0]
+          return result.formatted_address;
         }
         return "";
-      } 
+      }
     }
     catch (e) {
       return "";
@@ -75,14 +75,17 @@ export class MapProvider {
   }
 
   public static calculateDistance(lat1, lng1, lat2, lng2) {
-    let dLat = this.degreeToRadian(lat2 - lat1);
-    let dLng = this.degreeToRadian(lng2 - lng1);
+    let r = 6371; // earth radius in kilometers
+
+    let dLat = this.degreeToRadian(lat2 - lat1); // delta latitude
+    let dLng = this.degreeToRadian(lng2 - lng1); // delta longitude
     let tlat1 = this.degreeToRadian(lat1);
     let tlat2 = this.degreeToRadian(lat2);
 
     let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(tlat1) * Math.cos(tlat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    return (6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+
+    return (r * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   }
 
   public static degreeToRadian(value) {

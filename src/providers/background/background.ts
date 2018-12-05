@@ -6,7 +6,6 @@ import { EthersProvider } from './../ethers/ethers';
 import { HTTP } from '@ionic-native/http';
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { PowerManagement } from '@ionic-native/power-management';
 import { Storage } from '@ionic/storage';
 
 import BackgroundGeolocation from 'cordova-plugin-mauron85-background-geolocation';
@@ -29,8 +28,7 @@ export class BackgroundProvider {
     private mapProvider: MapProvider,
     private ethersProvider: EthersProvider,
     private circleController: CircleController,
-    private userController: UserController,
-    public powerManagement: PowerManagement) {
+    private userController: UserController) {
     http.setDataSerializer('json');
 
     platform.ready().then(() => {
@@ -56,7 +54,7 @@ export class BackgroundProvider {
       // distanceFilter: 50,
       notificationTitle: 'Background tracking',
       notificationText: 'enabled',
-      debug: true,
+      debug: false,
       interval: 10000,
       fastestInterval: 20000,
       activitiesInterval: 10000,
@@ -65,18 +63,11 @@ export class BackgroundProvider {
 
     BackgroundGeolocation.configure(config);
 
-    BackgroundGeolocation.on('location', (response) => {
+    BackgroundGeolocation.on('location', async (response) => {
       // handle your locations here
       // to perform long running operation on iOS
       // you need to create background task
       BackgroundGeolocation.startTask(async (taskKey) => {
-        // console.log("taskKey", response);
-
-        // this.http.post("http://35.227.100.119:8080/api/test", { time: new Date().getHours() + "::::" + new Date().getMinutes() + ":" + new Date().getSeconds() }, {}).then(data => {
-        //   // console.log(data);
-        // });
-
-        // let address = await this.mapProvider.requestAddress({ lat: response.latitude, lng: response.longitude });
         let address = await this.mapProvider.requestAddressHttp({ lat: response.latitude, lng: response.longitude });
         let location = new Location(response.latitude, response.longitude, address ? address : "");
         location.setTime(response.time);
@@ -88,16 +79,17 @@ export class BackgroundProvider {
           if (!this.lastestUpdate)
             await this.getLastest();
 
-          let deltaTime = response.time - this.lastestUpdate;
+          let deltaTime = response.time - this.lastestUpdate; // difference btwn times
 
-          if (deltaTime > 60000) {
+          if (deltaTime > 1800000) {
             // > 30 minutes
             let newStep = response.latitude + "," + response.longitude + "," + Date.now();
             let dateStr = new Date().toLocaleDateString().split("/").join("");
+
+            // new step
             let step = { step: newStep, dateStr: dateStr };
 
-            // this.addStepToLocal(step, response.time);
-
+            // get the steps from local storage
             this.storage.get('steps-' + this.userController.getOwner().id).then(val => {
               this.lastestUpdate = response.time;
 
@@ -108,13 +100,17 @@ export class BackgroundProvider {
               let mySteps = val;
               mySteps.push(step);
 
+              // add new step to local storage
               this.storage.set('steps-' + this.userController.getOwner().id, mySteps).then(() => {
-                // try to update
-                if(!this.onBackground){
-                  this.tryToUpdate();
-                }
+
               });
             });
+          }
+          else {
+            // try to update only on foreground mode
+            if (!this.onBackground) {
+              this.tryToUpdate();
+            }
           }
         }
         // execute long running task
@@ -125,17 +121,12 @@ export class BackgroundProvider {
     });
 
     BackgroundGeolocation.on('start', () => {
-      // this.circleController.joinAllCircleRooms();
       this.circleController.joinCurrentCircleRoom();
 
-      if (this.onHistoryTrace) {
-        this.tryToUpdate();
-      }
       console.log('[INFO] BackgroundGeolocation service has been started');
     });
 
     BackgroundGeolocation.on('stop', () => {
-      // this.circleController.leaveAllCircleRooms();
       this.circleController.leaveCurrentCircleRoom();
       console.log('[INFO] BackgroundGeolocation service has been stopped');
     });
@@ -146,12 +137,11 @@ export class BackgroundProvider {
 
     BackgroundGeolocation.on('background', () => {
       this.onBackground = true;
-      // this.circleController.leaveAllCircleRooms();
       this.circleController.leaveCurrentCircleRoom();
 
       console.log('[INFO] App is in background', this.onBackground);
       // you can also reconfigure service (changes will be applied immediately)
-      BackgroundGeolocation.configure({ debug: true });
+      // BackgroundGeolocation.configure({ debug: true });
     });
 
     BackgroundGeolocation.on('foreground', () => {
@@ -161,33 +151,40 @@ export class BackgroundProvider {
 
       console.log('[INFO] App is in foreground', this.onBackground);
 
-      if (this.onHistoryTrace) {
-        this.tryToUpdate();
-      }
       BackgroundGeolocation.configure({ debug: false });
     });
   }
 
   private tryToUpdate() {
-    if (!this.onBackground) {
+    console.log("tryToUpdate", this.isUpdating, this.onBackground);
+
+    if (!this.onBackground && !this.isUpdating) {
+      this.isUpdating = true;
+
       this.storage.get('steps-' + this.userController.getOwner().id).then(async val => {
         if (val && val.length > 0) {
           console.log("before: ", val)
           let onUpdateStep = val.splice(0, 1);
           console.log("after: ", onUpdateStep, val)
-
           this.storage.set('steps-' + this.userController.getOwner().id, val);
 
           try {
+            // if got error, on pending request exist!
             await this.ethersProvider.addStep(onUpdateStep[0].dateStr, onUpdateStep[0].step);
 
-            if (!this.onBackground && (val.length > 0) ) {
+            this.isUpdating = false;
+
+            if (!this.onBackground && (val.length > 0)) {
               this.tryToUpdate();
             }
           }
           catch (e) {
-
+            console.log("errorrrr", e);
+            this.isUpdating = false;
           }
+        }
+        else {
+          this.isUpdating = false;
         }
       });
     }

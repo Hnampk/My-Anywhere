@@ -50,12 +50,11 @@ export class EthersProvider {
   async addStep(date: string, step: string) {
     try {
       let tx = await this.contractWithSigner.addStep(date, step);
-      let before = await this.wallet.getBalance().then(balance => { return balance });
+      // let before = await this.wallet.getBalance().then(balance => { return balance });
       console.log(tx);
       await tx.wait();
-      let after = await this.wallet.getBalance().then(balance => { return balance });
-      console.log("mined")
-      console.log("before: ", before.toString(), "after", after.toString(), "difference", before.sub(after).toString());
+      // let after = await this.wallet.getBalance().then(balance => { return balance });
+      console.log("mined");
     }
     catch (e) {
       // await this.addStep(date, step);

@@ -1,6 +1,5 @@
 import { TracesProvider } from './../../providers/traces/traces';
 import { SocketProvider } from './../../providers/socket/socket';
-import { LocationProvider } from './../../providers/location/location';
 import { BackgroundProvider } from './../../providers/background/background';
 import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
@@ -11,7 +10,6 @@ import { AuthenticationProvider } from '../../providers/authentication/authentic
 import { User } from '../../providers/models/user';
 import { Location } from '../../providers/models/location';
 import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon, Marker } from '@ionic-native/google-maps';
-import { Geolocation, GeolocationOptions, Geoposition } from '@ionic-native/geolocation';
 import { EthersProvider } from '../../providers/ethers/ethers';
 import { Storage } from '@ionic/storage';
 
@@ -67,7 +65,6 @@ export class HomePage {
     public mPlatform: Platform,
     private events: Events,
     private storage: Storage,
-    private locationProvider: LocationProvider,
     private tracesProvider: TracesProvider,
     private ethersProvider: EthersProvider,
     private mAuthenticationProvider: AuthenticationProvider,

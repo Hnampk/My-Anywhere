@@ -17,12 +17,12 @@ export class WalkThroughPage {
       {
         icon: "./assets/imgs/connection.png",
         title: "Connecting people",
-        subTitle: "Connect people together Connect people together Connect people together Connect people together Connect people together"
+        subTitle: "Connect people together by sharing locations, routes to setup a meeting, a trip "
       },
       {
         icon: "./assets/imgs/travel.png",
         title: "Location",
-        subTitle: "Connect people together"
+        subTitle: "Share real-time location to a groups, friends and family"
       }
     ]
   }

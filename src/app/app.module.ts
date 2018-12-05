@@ -22,7 +22,6 @@ import { UserController } from '../providers/user-controller/user-controller';
 import { AppController } from '../providers/app-controller/app-controller';
 import { CircleController } from '../providers/circle-controller/circle-controller';
 import { BackgroundProvider } from '../providers/background/background';
-import { LocationProvider } from '../providers/location/location';
 import { MapProvider } from '../providers/map/map';
 import { SocketProvider } from '../providers/socket/socket';
 import { EthersProvider } from '../providers/ethers/ethers';
@@ -61,7 +60,6 @@ import { RouteController } from '../providers/route-controller/route-controller'
     AppController,
     CircleController,
     BackgroundProvider,
-    LocationProvider,
     MapProvider,
     SocketProvider,
     EthersProvider,

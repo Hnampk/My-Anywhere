@@ -1,4 +1,4 @@
-import { LocationProvider } from './../../providers/location/location';
+import { BackgroundProvider } from './../../providers/background/background';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { AuthenticationProvider } from './../../providers/authentication/authentication';
@@ -43,7 +43,7 @@ export class UserInfoPage {
   constructor(public navCtrl: NavController,
     private mClipboard: Clipboard,
     private authentication: AuthenticationProvider,
-    private locationProvider: LocationProvider,
+    private backgroundProvider: BackgroundProvider,
     private mAppController: AppController,
     private mUserController: UserController,
     private mCircleController: CircleController,
@@ -107,9 +107,9 @@ export class UserInfoPage {
   onClickLogOut() {
     this.showLoading();
 
-    this.locationProvider.stopWatchPosition();
+    this.backgroundProvider.stopWatchPosition();
+    this.backgroundProvider.stopTrace();
     
-
     this.authentication.logout()
       .then(() => {
         setTimeout(() => {
