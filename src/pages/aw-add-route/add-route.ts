@@ -76,6 +76,8 @@ export class AddRoutePage {
       onLoading: false
     }
 
+  route: Route;
+
   constructor(public navCtrl: NavController,
     private mPlatform: Platform,
     private mModalController: ModalController,
@@ -88,7 +90,11 @@ export class AddRoutePage {
     private mActionSheetController: ActionSheetController,
     private mChangeDetectorRef: ChangeDetectorRef,
     // private mAwModule: AwModule,
-    public navParams: NavParams) { }
+    public navParams: NavParams) {
+    if (this.circleController.getCurrentCircle().route) {
+      this.route = this.circleController.getCurrentCircle().route;
+    }
+  }
 
   ionViewDidEnter() {
     this.mPlatform.ready().then(() => {
@@ -147,7 +153,12 @@ export class AddRoutePage {
         }
         this.map = GoogleMaps.create(mapElement, mapOption);
 
-        this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+        this.map.one(GoogleMapsEvent.MAP_READY).then(async () => {
+          if (this.route) {
+            await this.setUpROute(this.route);
+            this.showRouteOnMap(this.mDatas.route);
+          }
+
           this.hideLoading();
           console.log("map is ready");
         }).catch(e => {
@@ -168,6 +179,20 @@ export class AddRoutePage {
         });
       });
     }
+  }
+
+  setUpROute(route: Route) {
+    return new Promise((res, rej) => {
+      for (let i = 0; i < route.locations.length; i++) {
+        let point = route.locations[i];
+
+        let location = new LocationWithMarker(point);
+        this.addStepOnMap(location, ((i == 0) || (i == route.locations.length - 1)) ? false : true)
+
+        this.mDatas.route.push(location);
+      }
+      res();
+    });
   }
 
   showRouteOnMap(steps: Array<LocationWithMarker>) {
@@ -202,8 +227,8 @@ export class AddRoutePage {
     let icon: MarkerIcon = {
       url: isCheckPoint ? "./assets/imgs/route-point.png" : "./assets/imgs/route-start.png",
       size: {
-        width: 20,
-        height: 20
+        width: isCheckPoint ? 16 : 20,
+        height: isCheckPoint ? 16 : 20
       }
     };
 
@@ -320,14 +345,18 @@ export class AddRoutePage {
     }
   }
 
-  onSaveRoute() {
-    console.log(this.mDatas.route);
+  async onSaveRoute() {
+    // console.log(this.mDatas.route);
 
     let route = new Route();
     route.onResponseData(this.mDatas.route);
-    route.cỉcleId = this.circleController.getCurrentCircle().id;
+    route.cỉrcleId = this.circleController.getCurrentCircle().id;
 
-    this.routeController.createRoute(route);
+    let result = await this.routeController.createRoute(route);
+
+    if (result) {
+      this.circleController.getCurrentCircle().addRoute(result);
+    }
   }
 
   onShowDatePicker() {
@@ -494,8 +523,11 @@ export class AddRoutePage {
       title: "Tùy chọn",
       buttons: [{
         text: "Lưu lại",
-        handler: () => {
-          this.onSaveRoute();
+        handler: async () => {
+          this.showLoading();
+          await this.onSaveRoute();
+          this.hideLoading();
+
           this.navCtrl.pop();
         }
       }, {

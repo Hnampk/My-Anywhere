@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { TracesProvider } from '../../providers/traces/traces';
+import { EthersProvider } from '../../providers/ethers/ethers';
 
 @IonicPage()
 @Component({
@@ -27,10 +29,23 @@ export class WalkThroughPage {
     ]
   }
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController,
+    ethersProvider: EthersProvider,
+    private tracesProvider: TracesProvider) {
+    ethersProvider.createWallet("rose suit over suffer bubble cinnamon gossip simple wink way sock cloud");
   }
 
   onClickNext() {
     this.navCtrl.setRoot("LoginPage");
+  }
+
+
+  async onClickSomething() {
+    console.log("onClickTitle", new Date().toLocaleDateString())
+    let dateStr = new Date().toLocaleDateString().split("/").join("");
+
+    let a = await this.tracesProvider.getTrace("0xd5F38EDc368B04bCC7E1ed15dc17aC781b79D47A", "11112018");
+
+    console.log(a);
   }
 }

@@ -22,8 +22,12 @@ export class Route {
         this._id = id;
     }
 
-    set cỉcleId(circleId: string){
+    set cỉrcleId(circleId: string){
         this._circleId = circleId;
+    }
+
+    get circleId(){
+        return this._circleId;
     }
     
     get locations(){

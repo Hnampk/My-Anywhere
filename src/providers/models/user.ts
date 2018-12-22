@@ -66,7 +66,7 @@ export class User {
     updateMarkerPosition() {
         if (this.marker) {
             this.marker.setPosition(new LatLng(this.lastestLocation.lat, this.lastestLocation.lng));
-            this.marker.setVisible(true);
+            // this.marker.setVisible(true);
         }
     }
 }

@@ -31,13 +31,13 @@ page-home {
                         .avatar {
                             width: 3.2em;
                             height: 3.2em;
-                            padding: 4px;
-                            border-radius: 50%;
                             margin-bottom: 4px;
                             opacity: .7;
-                            img {
-                                border-radius: 50%;
-                            }
+                            background-size: cover;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            border-radius: 50%;
+                            position: relative;
                         }
                         .is-actived {
                             opacity: 1 !important;

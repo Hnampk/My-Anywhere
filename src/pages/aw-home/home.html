@@ -3,17 +3,17 @@
     <ion-toolbar>
         <ion-buttons left>
             <button ion-button *ngIf="!mDatas.isOnDetail" class="menu-icon" (click)="onClickMenu()">
-              <ion-icon name="aw-menu"></ion-icon>
+                <ion-icon name="aw-menu"></ion-icon>
             </button>
             <button ion-button *ngIf="mDatas.isOnDetail" (click)="onClickCloseViewDetail()">
-              <ion-icon name="ios-arrow-back-outline"></ion-icon>
+                <ion-icon name="ios-arrow-back-outline"></ion-icon>
             </button>
         </ion-buttons>
         <ion-title (click)="onClickTitle()">{{ circle?circle.name:mTexts.title}}</ion-title>
         <!-- <ion-title (click)="onClickTitle()">{{ mDatas.circleId?mDatas.circleName:mTexts.title}}</ion-title> -->
         <ion-buttons right>
             <button ion-button icon-only class="more-btn" (click)="onClickMore()">
-              <ion-icon name="ios-more-outline"></ion-icon>
+                <ion-icon name="ios-more-outline"></ion-icon>
             </button>
         </ion-buttons>
     </ion-toolbar>
@@ -29,9 +29,9 @@
         <div id="map">
             <div #members class="members-background hidden-members hidden">
                 <div class="members-container a3-container-inline">
-                    <div class="member a3-container a3-column a3-items-center" *ngFor="let member of mDatas.circleMembers" (click)="onClickChangeMemberDetail(member)">
-                        <div class="avatar" [class.is-actived]="member==mDatas.memberDetail">
-                            <img [src]="member.avatar">
+                    <div class="member a3-container a3-column a3-items-center" *ngFor="let member of mDatas.circleMembers"
+                        (click)="onClickChangeMemberDetail(member)">
+                        <div class="avatar" [class.is-actived]="member==mDatas.memberDetail" [ngStyle]="{'background-image':'url('+member.avatar+')'}">
                         </div>
                         <div class="name a1-text-ellipsis">{{ member.name }}</div>
                     </div>
@@ -51,7 +51,8 @@
                                     {{ member.name }}
                                 </ion-col>
                                 <ion-col class="time">
-                                    {{ member.lastestLocation?.time | date:isShortTime(member.lastestLocation?.time)?'shortTime':'short' }}
+                                    {{ member.lastestLocation?.time |
+                                    date:isShortTime(member.lastestLocation?.time)?'shortTime':'short' }}
                                 </ion-col>
                             </ion-row>
                             <ion-row>
@@ -62,7 +63,7 @@
                 </ion-grid>
             </div>
             <div class="route-container" *ngIf="mDatas.isOnDetail">
-                <div *ngIf="mDatas.memberDetail?.isPublic" class="a1-fill-parent">
+                <div class="a1-fill-parent">
                     <ion-grid no-padding>
                         <ion-row class="step" *ngFor="let step of mDatas.currentTrace; first as f; last as l">
                             <ion-col col-2 class="icon-container a1-relative">
@@ -92,7 +93,7 @@
                         <div>{{ mTexts.emptyRoute }}</div>
                     </div>
                 </div>
-                <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail?.isPublic">
+                <div class="notice a3-container-center a1-fill-parent" *ngIf="false && !mDatas.memberDetail?.isPublic">
                     <div>{{ mTexts.notPublic }}</div>
                 </div>
             </div>
@@ -114,3 +115,4 @@
 </ion-content>
 
 <aw-loading *ngIf="mDatas.onLoading"></aw-loading>
+<aw-date-picker *ngIf="mDatas.isShowingDatePicker" [time]="mDatas.currentDateView" (cancel)="onCancelDatePicker()" (done)="onDatePickerChanged($event)"></aw-date-picker>

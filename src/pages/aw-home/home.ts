@@ -1,17 +1,20 @@
+import { AppController } from './../../providers/app-controller/app-controller';
 import { TracesProvider } from './../../providers/traces/traces';
 import { SocketProvider } from './../../providers/socket/socket';
 import { BackgroundProvider } from './../../providers/background/background';
 import { Circle } from './../../providers/models/circle';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, ActionSheetController, Events, Platform } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { User } from '../../providers/models/user';
 import { Location } from '../../providers/models/location';
-import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon, Marker } from '@ionic-native/google-maps';
+import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, LocationService, CameraPosition, ILatLng, MarkerOptions, LatLng, MarkerIcon, Marker, Polyline, PolylineOptions } from '@ionic-native/google-maps';
 import { EthersProvider } from '../../providers/ethers/ethers';
 import { Storage } from '@ionic/storage';
+import { Route } from '../../providers/models/route';
+import { Utils } from '../../providers/app-utils';
 
 @IonicPage()
 @Component({
@@ -19,6 +22,7 @@ import { Storage } from '@ionic/storage';
   templateUrl: 'home.html',
 })
 export class HomePage {
+  @ViewChild('members') members: ElementRef;
 
   map: GoogleMap
 
@@ -36,26 +40,26 @@ export class HomePage {
     circleMembers: Array<User>,
     circleNewMessages: number,
     isOnDetail: boolean,
-    // memberDetail: Member,
+    memberDetail: User,
     onLoading: boolean,
     isShowingDatePicker: boolean,
     currentDateView: Date,
     currentTrace: Array<Location>,
-    // currentRoute: Polyline,
-    // currentSteps: Array<Marker>
+    currentRoute: Polyline,
+    currentSteps: Array<Marker>
   } = {
       circleId: "",
       circleName: "",
       circleMembers: [],
       circleNewMessages: 0,
       isOnDetail: false,
-      // memberDetail: null,
+      memberDetail: null,
       onLoading: false,
       isShowingDatePicker: false,
       currentDateView: new Date(),
       currentTrace: [],
-      // currentRoute: null,
-      // currentSteps: []
+      currentRoute: null,
+      currentSteps: []
     }
 
   circle: Circle;
@@ -68,6 +72,7 @@ export class HomePage {
     private tracesProvider: TracesProvider,
     private ethersProvider: EthersProvider,
     private mAuthenticationProvider: AuthenticationProvider,
+    private appController: AppController,
     private backgroundProvider: BackgroundProvider,
     private userController: UserController,
     private mCircleController: CircleController,
@@ -79,6 +84,7 @@ export class HomePage {
   }
 
   ngOnInit() {
+
     this.events.subscribe("circles:show", async data => {
       console.log("SHOW: ", data.circle);
 
@@ -131,6 +137,45 @@ export class HomePage {
   }
 
   ionViewWillEnter() {
+
+    this.events.unsubscribe("circles:show");
+    this.events.subscribe("circles:show", async data => {
+      console.log("SHOW: ", data.circle);
+
+      this.showLoading();
+
+      if (this.circle) this.circle.hideMembersMarker();
+
+      let circle = await this.mCircleController.getCircleByIdFromServer(data.circle.id)
+      this.mCircleController.setCurrentCircle(circle);
+
+      this.onUpdateCircleData(circle);
+
+      LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
+        if (this.map) {
+          let cameraPosition: CameraPosition<ILatLng> = {
+            target: location.latLng,
+            duration: 300,
+            zoom: 17
+          }
+
+          this.onSetupMap(circle);
+
+          this.map.animateCamera(cameraPosition)
+            .then(() => {
+              this.hideLoading();
+            })
+            .catch(e => {
+              this.hideLoading();
+            });
+        }
+      })
+        .catch(e => {
+          console.log(e);
+          this.hideLoading();
+        });
+    });
+
     this.socketProvider.newMessageReceived().subscribe(data => {
       console.log("Received new message", data);
     });
@@ -218,15 +263,11 @@ export class HomePage {
     this.menu.open();
   }
 
-  onClickMemberPosition(member: User) {
-    console.log(member);
-  }
-
   onClickMore() {
     let action = this.mActionSheetController.create({
       title: "Tùy chọn",
       buttons: [{
-        text: "Tạo mới lộ trình/địa điểm",
+        text: "Lộ trình/địa điểm",
         handler: () => {
           this.navCtrl.push("AddRoutePage", { animation: 'ios-transition' });
         }
@@ -234,10 +275,10 @@ export class HomePage {
         text: this.mDatas.isOnDetail ? "Vị trí thành viên" : "Lộ trình thành viên",
         handler: () => {
           if (!this.mDatas.isOnDetail) {
-            // this.onClickViewDetail();
+            this.onClickViewDetail();
           }
           else {
-            // this.onClickCloseViewDetail();
+            this.onClickCloseViewDetail();
           }
         }
       }, {
@@ -267,6 +308,199 @@ export class HomePage {
     });
 
     action.present();
+  }
+
+  onClickCloseViewDetail() {
+    this.hideMembersBar();
+    this.onChangePageView();
+    this.menu.enable(true);
+  }
+
+  onClickViewDetail() {
+    if (this.mDatas.circleMembers.length > 0) {
+      this.mDatas.memberDetail = this.mDatas.circleMembers[0];
+      let dateStr = this.mDatas.currentDateView.toLocaleDateString().split("/").join("");
+      this.getMemberTrace("0xd5F38EDc368B04bCC7E1ed15dc17aC781b79D47A", dateStr);
+    }
+    this.hideMembersOnMap();
+    this.showMembersBar();
+    this.onChangePageView();
+    this.menu.enable(false);
+  }
+
+  hideMembersOnMap() {
+    this.mDatas.circleMembers.forEach((member: User) => {
+      if (member.marker && member.marker.isVisible()) {
+        member.marker.setVisible(false);
+      }
+    });
+  }
+
+  getMemberTrace(address: string, dateStr: string) {
+    console.log("dateStr", dateStr);
+    this.showLoading();
+    this.mDatas.currentTrace = [];
+
+    this.hideRouteOnMap().then(async () => {
+      console.log("hideRouteOnMap!!")
+      // if (member.isPublic) {
+
+      let tempTrace = await this.tracesProvider.getTrace(address, dateStr);
+
+      for (let i = 0; i < tempTrace.length; i++) {
+        let step = tempTrace[i];
+
+        this.mDatas.currentTrace.push(step);
+
+      }
+
+      if (this.mDatas.currentTrace.length > 0) {
+        this.showRouteOnMap(this.mDatas.currentTrace, true);
+        let lastestStep = this.mDatas.currentTrace[this.mDatas.currentTrace.length - 1];
+
+        Utils.animateCameraTo(this.map, new LatLng(lastestStep.lat, lastestStep.lng), 1000)
+      }
+
+      this.hideLoading();
+      // }
+    });
+  }
+
+
+  showRouteOnMap(steps: Array<Location>, withStep: boolean) {
+    let latLngs: Array<LatLng> = [];
+
+    steps.forEach(step => {
+      latLngs.push(new LatLng(step.lat, step.lng));
+    });
+
+    let polylineOptions: PolylineOptions = {
+      points: latLngs,
+      color: "#20ACFF",
+      width: 4
+    }
+
+    if (this.map) {
+      if (withStep) {
+        steps.forEach(step => {
+          let markerOptions: MarkerOptions = {
+            icon: ((steps.indexOf(step) == 0) || (steps.indexOf(step) == (steps.length - 1))) ? "./assets/imgs/route-start.png" : "./assets/imgs/route-point.png",
+            position: new LatLng(step.lat, step.lng),
+            size: {
+              width: 20,
+              height: 20
+            }
+          }
+
+          this.map.addMarker(markerOptions).then((marker: Marker) => {
+            this.mDatas.currentSteps.push(marker);
+          });
+        });
+      }
+
+      this.map.addPolyline(polylineOptions).then((polyline: Polyline) => {
+        this.mDatas.currentRoute = polyline;
+      });
+    }
+  }
+
+  onChangePageView() {
+    if (!this.mDatas.isOnDetail) {
+      // View thông tin vòng kết nối => View Chi tiết thành viên
+      // *Todo: Ẩn Marker các thành viên
+      //        Show thông tin của thành viên đang được view
+      this.mDatas.isOnDetail = true;
+      // this.hideMembersOnMap();
+    }
+    else {
+      // View Chi tiết thành viên => View thông tin vòng kết nối
+      // *Todo: Ẩn thông tin của thành viên đang được view
+      //        Show Marker các thành viên
+      this.mDatas.isOnDetail = false;
+      this.hideRouteOnMap()
+      this.showMembersOnMap();
+      this.mDatas.memberDetail = null;
+    }
+  }
+
+  hideRouteOnMap() {
+    return new Promise((res, rej) => {
+      if (this.mDatas.currentRoute) {
+        this.mDatas.currentRoute.remove();
+        this.mDatas.currentRoute = null;
+      }
+
+      if (this.mDatas.currentSteps.length > 0) {
+        this.mDatas.currentSteps.forEach(step => {
+          step.remove();
+        });
+        this.mDatas.currentSteps = [];
+      }
+      res();
+    })
+  }
+
+  showMembersOnMap() {
+    if (this.map) {
+      this.mDatas.circleMembers.forEach((member: User) => {
+        if (member.marker) {
+          if (!member.marker.isVisible()) {
+            member.marker.setVisible(true);
+          }
+        }
+        else {
+          if (member.lastestLocation) {
+            let markerOptions: MarkerOptions = {
+              icon: "",//"data:image/png;base64," + this.imageToBase64(member.avatar),
+              position: new LatLng(member.lastestLocation.lat, member.lastestLocation.lng),
+              size: {
+                width: 24,
+                height: 24
+              }
+            }
+
+            this.map.addMarker(markerOptions).then((marker: Marker) => {
+              member.marker = marker;
+            });
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Hiển thị danh sách thành viên dưới Header
+   */
+  showMembersBar() {
+    if (this.members && this.members.nativeElement.classList.contains("hidden")) {
+      this.members.nativeElement.classList.remove("hidden");
+    }
+
+    if (this.members && this.members.nativeElement.classList.contains("hidden-members")) {
+      setTimeout(() => {
+        this.members.nativeElement.classList.remove("hidden-members");
+      }, 400);
+    }
+  }
+
+  /**
+   * Ẩn danh sách thành viên dưới Header
+   */
+  hideMembersBar() {
+    if (this.members && !this.members.nativeElement.classList.contains("hidden-members")) {
+      this.members.nativeElement.classList.add("hidden-members");
+    }
+
+    if (this.members && !this.members.nativeElement.classList.contains("hidden")) {
+      setTimeout(() => {
+        this.members.nativeElement.classList.add("hidden");
+      }, 400);
+    }
+  }
+
+  onClickChangeMemberDetail(member: User) {
+    this.mDatas.memberDetail = member;
+    // this.getMemberTrace(this.mDatas.memberDetail);
   }
 
   onUpdateCircleData(circle: Circle) {
@@ -339,12 +573,42 @@ export class HomePage {
     // console.log("onClickChat");
     this.storage.get("steps-" + this.userController.getOwner().id).then(data => {
       console.log("steps: ", data);
-      
+
     });
+  }
+
+  onClickDatePicker() {
+    this.mDatas.isShowingDatePicker = true;
+    this.menu.enable(false);
+  }
+
+  onCancelDatePicker() {
+    this.mDatas.isShowingDatePicker = false;
+    this.menu.enable(true);
+  }
+
+  onDatePickerChanged(data) {
+    console.log("onDatePickerChanged");
+
+    this.mDatas.isShowingDatePicker = false;
+    this.mDatas.currentDateView = new Date(data['year'], data['month'] - 1, data['date']);
+    this.getMemberTrace("0xd5F38EDc368B04bCC7E1ed15dc17aC781b79D47A", this.mDatas.currentDateView.toLocaleDateString().split("/").join(""));
+    this.menu.enable(true);
   }
 
   onClickTitle() {
     console.log("onClickTitle");
+  }
+
+  onClickMemberPosition(member: User) {
+    if (this.map && member.lastestLocation) {
+      let latLng = new LatLng(member.lastestLocation.lat, member.lastestLocation.lng);
+      Utils.animateCameraTo(this.map, latLng, 1000);
+    }
+  }
+
+  onClickStep(step: Location) {
+    Utils.animateCameraTo(this.map, new LatLng(step.lat, step.lng), 1000, 840);
   }
 
   // 00:00 this day in milliseconds

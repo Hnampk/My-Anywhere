@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { EthersProvider } from '../ethers/ethers';
+import { Location } from '../models/location';
 
 @Injectable()
 export class TracesProvider {
   myInterval;
 
-  traces = new Map<string, Map<string, Array<any>>>();
+  traces = new Map<string, Map<string, Array<Location>>>();
 
   constructor(public http: HttpClient,
     private ethersProvider: EthersProvider,

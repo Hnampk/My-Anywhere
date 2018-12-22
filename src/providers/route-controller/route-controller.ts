@@ -20,20 +20,24 @@ export class RouteController {
       // }
 
       let newRoute = {
-        "circle_id": route.cỉcleId,
-        "name": route.name,
+        "circle_id": route.circleId,
+        "name": "name",
         "locations": route.locations
       }
+      console.log(route, newRoute);
 
       // send request to create new circle
       this.http.post<{ route: any }>(this.serviceUrl + AnywhereRouter.CREATE_ROUTE, newRoute)
         .subscribe(response => {
+          console.log(response);
           if (response.route) {
             route.id = response.route._id;
 
             this.routes.push(route);
+            res(route);
           }
         }, error => {
+          console.log("error", error);
           rej(error);
         });
     });

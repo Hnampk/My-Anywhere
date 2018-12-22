@@ -97,13 +97,13 @@
         <variable name="ACCOUNT_TYPE" value="$PACKAGE_NAME.account" />
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
     </plugin>
-    <plugin name="cordova-plugin-googlemaps" spec="2.4.6">
-        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyB5KwTvbeJD9oXqG0jbldYcoE-AQoG4WP0" />
-        <variable name="API_KEY_FOR_IOS" value="AIzaSyB3FPPz_KFqHp8Xwmhc0TrFwMgOP_eosBs" />
-    </plugin>
     <plugin name="cordova-plugin-background-mode" spec="https://github.com/tushe/cordova-plugin-background-mode.git" />
     <plugin name="at.gofg.sportscomputer.powermanagement" spec="https://github.com/Viras-/cordova-plugin-powermanagement.git" />
     <plugin name="cordova-sqlite-storage" spec="2.5.2" />
     <plugin name="cordova-plugin-advanced-http" spec="2.0.1" />
+    <plugin name="cordova-plugin-googlemaps" spec="2.3.0-rc1">
+        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyB5KwTvbeJD9oXqG0jbldYcoE-AQoG4WP0" />
+        <variable name="API_KEY_FOR_IOS" value="AIzaSyB3FPPz_KFqHp8Xwmhc0TrFwMgOP_eosBs" />
+    </plugin>
     <engine name="android" spec="7.1.4" />
 </widget>

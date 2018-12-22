@@ -7,6 +7,7 @@ import { HTTP } from '@ionic-native/http';
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+import { PowerManagement } from '@ionic-native/power-management';
 
 import BackgroundGeolocation from 'cordova-plugin-mauron85-background-geolocation';
 import { Location } from '../models/location';
@@ -28,7 +29,8 @@ export class BackgroundProvider {
     private mapProvider: MapProvider,
     private ethersProvider: EthersProvider,
     private circleController: CircleController,
-    private userController: UserController) {
+    private userController: UserController,
+    public powerManagement: PowerManagement) {
     http.setDataSerializer('json');
 
     platform.ready().then(() => {
@@ -136,6 +138,17 @@ export class BackgroundProvider {
     });
 
     BackgroundGeolocation.on('background', () => {
+      this.powerManagement.dim().then(() => {
+        console.log('enablebackground: Wakelock acquired');
+        this.powerManagement.setReleaseOnPause(false).then(() => {
+          console.log('enablebackground: setReleaseOnPause success');
+        }).catch(error => {
+          console.log('enablebackground: setReleaseOnPause Failed to set');
+        });
+      }).catch(error => {
+        console.log('enablebackground: Failed to acquire wakelock');
+      });
+
       this.onBackground = true;
       this.circleController.leaveCurrentCircleRoom();
 
@@ -145,6 +158,12 @@ export class BackgroundProvider {
     });
 
     BackgroundGeolocation.on('foreground', () => {
+      this.powerManagement.release().then(() => {
+        console.log('disableBackground: Wakelock released');
+      }).catch((error) => {
+        console.log('disableBackground: Failed to release wakelock');
+      });
+
       this.onBackground = false;
       // this.circleController.joinAllCircleRooms();
       this.circleController.joinCurrentCircleRoom();
@@ -303,5 +322,11 @@ export class BackgroundProvider {
 
   stopWatchPosition() {
     BackgroundGeolocation.stop();
+    
+      this.powerManagement.release().then(() => {
+        console.log('disableBackground: Wakelock released');
+      }).catch((error) => {
+        console.log('disableBackground: Failed to release wakelock');
+      });
   }
 }

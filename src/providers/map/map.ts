@@ -4,6 +4,7 @@ import { HTTP } from '@ionic-native/http';
 import {
   ILatLng, LatLng,
   GeocoderRequest, Geocoder, GeocoderResult,
+  LatLngBounds
 } from '@ionic-native/google-maps';
 
 @Injectable()
@@ -72,6 +73,18 @@ export class MapProvider {
     catch (e) {
       return "";
     }
+  }
+
+  public static getCenterPoint(locations: Array<ILatLng>) {
+    let bound = new LatLngBounds();
+
+    for (let i = 0; i < locations.length; i++) {
+      let location = locations[i]
+
+      bound.extend(location);
+    }
+
+    return bound.getCenter();
   }
 
   public static calculateDistance(lat1, lng1, lat2, lng2) {

@@ -5,7 +5,7 @@ import { Location } from "./location";
 export class Circle {
     private admin_id: string;
     private members: Array<User> = [];
-    private routes: Array<Route> = [];
+    route: Route = null;
     name: string;
 
     constructor(private _id: string) {
@@ -32,6 +32,11 @@ export class Circle {
         return this.admin_id;
     }
 
+    addRoute(route: Route) {
+        this.route = route;
+    }
+
+
     /**
      * Update data for circle
      * @param data : {admin_id, members, name}
@@ -45,6 +50,18 @@ export class Circle {
 
         if (data.admin_id) {
             this.admin_id = data.admin_id;
+        }
+
+        if(data.route){
+            let route = new Route();
+
+            for(let i = 0; i < data.route.locations.length; i++){
+                let point = data.route.locations[i];
+
+                let location = new Location(point._lat, point._lng, point._address);
+                route.locations.push(location);
+            }
+            this.route = route;
         }
     }
 
