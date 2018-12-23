@@ -78,7 +78,7 @@ export class HomePage {
     private backgroundProvider: BackgroundProvider,
     private userController: UserController,
     private mCircleController: CircleController,
-    private mActionSheetController: ActionSheetController,
+    private actionSheetController: ActionSheetController,
     private socketProvider: SocketProvider,
     public navParams: NavParams) {
     menu.enable(true);
@@ -273,7 +273,7 @@ export class HomePage {
   }
 
   onClickMore() {
-    let action = this.mActionSheetController.create({
+    let action = this.actionSheetController.create({
       title: "Tùy chọn",
       buttons: [{
         text: "Lộ trình/địa điểm",
@@ -281,7 +281,7 @@ export class HomePage {
           this.navCtrl.push("AddRoutePage", { animation: 'ios-transition' });
         }
       }, {
-        text: this.mDatas.isOnDetail ? "Vị trí thành viên" : "Lộ trình thành viên",
+        text: this.mDatas.isOnDetail ? "Vị trí thành viên" : "Lịch sử di chuyển",
         handler: () => {
           if (!this.mDatas.isOnDetail) {
             this.onClickViewDetail();
@@ -297,12 +297,6 @@ export class HomePage {
         }
       }, {
         text: "Đo khoảng cách",
-        handler: () => {
-
-        }
-      }, {
-        text: "Rời vòng kết nối",
-        role: "destructive",
         handler: () => {
 
         }
@@ -347,7 +341,7 @@ export class HomePage {
         message: 'Tài khoản của bạn phải liên kết với một ví Ethereum để có thể sử dụng tính năng này! (Menu/Ghi lại lịch sử di chuyển)',
         buttons: [
           {
-            text: 'Đã rõ',
+            text: 'Bỏ qua',
             handler: () => {
               // console.log('Disagree clicked');
             }
@@ -385,18 +379,18 @@ export class HomePage {
 
       if (address) {
         let tempTrace = await this.tracesProvider.getTrace(address, dateStr);
-  
+
         for (let i = 0; i < tempTrace.length; i++) {
           let step = tempTrace[i];
-  
+
           this.mDatas.currentTrace.push(step);
-  
+
         }
-  
+
         if (this.mDatas.currentTrace.length > 0) {
           this.showRouteOnMap(this.mDatas.currentTrace, true);
           let lastestStep = this.mDatas.currentTrace[this.mDatas.currentTrace.length - 1];
-  
+
           Utils.animateCameraTo(this.map, new LatLng(lastestStep.lat, lastestStep.lng), 1000)
         }
       }

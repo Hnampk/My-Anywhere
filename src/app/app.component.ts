@@ -80,6 +80,11 @@ export class MyApp {
         console.log('circles:updated', this.menuDatas);
       });
 
+      events.subscribe('circles:force', (data: { circle: Circle }) => {
+        console.log(data);
+        this.onShowCircle(data.circle);
+      });
+
     });
   }
 
@@ -120,6 +125,7 @@ export class MyApp {
    * @param circle 
    */
   private onShowCircle(circle: Circle) {
+
     this.socketProvider.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
     // update current circle id
     this.menuDatas.currentCircleId = circle.id;

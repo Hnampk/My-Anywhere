@@ -1,0 +1,31 @@
+<ion-header class="m-header aw-header">
+
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button (click)="onClickClose()">
+        <ion-icon name="ios-arrow-back-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title (click)="onClickTitle()">
+      {{ mTexts.title }}
+    </ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content padding>
+
+  <div class="content-container">
+    <ion-grid padding>
+      <ion-row *ngFor="let member of mDatas.members" (click)="onClickMember(member)">
+        <ion-col>{{member.info.name}}</ion-col>
+        <ion-col col-4>{{(member.expirationTime!=0)?(member.expirationTime | date:'mediumDate'):""}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>
+<aw-date-picker *ngIf="mDatas.isShowingDatePicker" [time]="mDatas.currentDateView" (cancel)="onCancelDatePicker()"
+  (done)="onDatePickerChanged($event)"></aw-date-picker>

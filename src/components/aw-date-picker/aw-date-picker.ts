@@ -93,7 +93,7 @@ export class AwDatePickerComponent {
 
   setupYears() {
     // this app has been developed in 2018
-    for (let i = 2018; i <= this.mDatas.currentYear; i++) {
+    for (let i = 2018; i <= this.mDatas.currentYear + 1; i++) {
       this.mDatas.years.push(i);
     }
     this.mDatas.years.push(0);

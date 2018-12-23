@@ -43,7 +43,6 @@ export class EthersProvider {
   }
 
   hasWallet() {
-    console.log(this.mnemonic != null)
     return this.mnemonic != null;
   }
 
@@ -145,7 +144,19 @@ export class EthersProvider {
    * Get the number of steps on a specific date
    */
   getStepsValue(address: string, date: string) {
-
     return this.contractWithSigner.getStepsValue(address, date);
+  }
+
+  getExpirationTime(targetAddress: string, requiredAddress: string){
+    return this.contractWithSigner.getExpirationTime(targetAddress, requiredAddress)
+  }
+
+  async renewExpirationTime(requiredAddress: string, time: number){
+    try{
+      await this.contractWithSigner.renewExpirationTime(requiredAddress, time);
+    }
+    catch(e){
+
+    }
   }
 }

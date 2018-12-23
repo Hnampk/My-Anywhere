@@ -1,4 +1,16 @@
 page-circle-settings {
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
     ion-content{
         background-color: #F8F8F8 !important;
     }

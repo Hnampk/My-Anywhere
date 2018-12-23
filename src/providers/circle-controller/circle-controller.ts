@@ -19,7 +19,7 @@ export class CircleController {
   private currentCircle: Circle;
 
   constructor(public http: HttpClient,
-    private mUserController: UserController,
+    private userController: UserController,
     private socketProvider: SocketProvider,
     private events: Events
   ) {
@@ -50,37 +50,37 @@ export class CircleController {
     this.currentCircle = circle;
   }
 
-  getCurrentCircle(){
+  getCurrentCircle() {
     return this.currentCircle;
   }
 
-  joinCurrentCircleRoom(){
-    this.socketProvider.joinCircleRoom(this.currentCircle.id, this.mUserController.getOwner().id);
+  joinCurrentCircleRoom() {
+    this.socketProvider.joinCircleRoom(this.currentCircle.id, this.userController.getOwner().id);
   }
 
-  leaveCurrentCircleRoom(){
-    this.socketProvider.leaveCircleRoom(this.currentCircle.id, this.mUserController.getOwner().id);
+  leaveCurrentCircleRoom() {
+    this.socketProvider.leaveCircleRoom(this.currentCircle.id, this.userController.getOwner().id);
   }
 
   joinAllCircleRooms() {
     // this.socketProvider.connect();
     for (let i = 0; i < this.circles.length; i++) {
       let circle = this.circles[i];
-      this.socketProvider.joinCircleRoom(circle.id, this.mUserController.getOwner().id);
+      this.socketProvider.joinCircleRoom(circle.id, this.userController.getOwner().id);
     }
   }
 
-  leaveAllCircleRooms(){
+  leaveAllCircleRooms() {
     for (let i = 0; i < this.circles.length; i++) {
       let circle = this.circles[i];
-      this.socketProvider.leaveCircleRoom(circle.id, this.mUserController.getOwner().id);
+      this.socketProvider.leaveCircleRoom(circle.id, this.userController.getOwner().id);
     }
     // this.socketProvider.disconnect();
   }
 
   // update for home view
   updateOwnerDataInCurrentCircle(name: string, avatar?: string) {
-    let owner = this.currentCircle.getMembers().find(member => { return member.id == this.mUserController.getOwner().id });
+    let owner = this.currentCircle.getMembers().find(member => { return member.id == this.userController.getOwner().id });
 
     owner.name = name;
 
@@ -100,7 +100,7 @@ export class CircleController {
       // }
 
       let newCircle = {
-        "admin_id": this.mUserController.getOwner().id,
+        "admin_id": this.userController.getOwner().id,
         "name": name
       }
 
@@ -139,10 +139,34 @@ export class CircleController {
       // send request to create new circle
       this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.REMOVE_MEMBER_FROM_CIRCLE + circle.id, { member_id: member.id })
         .subscribe(response => {
-          // circle.addMember(member);
-          // console.log(circle);
           console.log(response);
           circle.removeMember(member);
+          res();
+        }, error => {
+          rej(error);
+        });
+    });
+  }
+
+  leaveCircle(circle: Circle) {
+    return new Promise((res, rej) => {
+      let member = this.userController.getOwner();
+
+      // send request to create new circle
+      this.http.patch<{ info: any }>(this.serviceUrl + AnywhereRouter.REMOVE_MEMBER_FROM_CIRCLE + circle.id, { member_id: member.id })
+        .subscribe(response => {
+          circle.removeMember(member);
+
+          let index = this.circles.findIndex(element => { return element.id == circle.id });
+
+          if (index > 0) {
+            this.events.publish('circles:force', { circle: this.circles[index - 1] });
+          }
+          else {
+            this.events.publish('circles:force', { circle: this.circles[index + 1] });
+          }
+          this.circles.splice(index, 1);
+
           res();
         }, error => {
           rej(error);
@@ -157,7 +181,7 @@ export class CircleController {
    */
   getMyCircles() {
     return new Promise((res, rej) => {
-      this.getCirclesByUserIdFromServer(this.mUserController.getOwner().id)
+      this.getCirclesByUserIdFromServer(this.userController.getOwner().id)
         .then(() => {
           res();
         });
@@ -272,7 +296,7 @@ export class CircleController {
       for (let i = 0; i < memberIds.length; i++) {
         let memberId = memberIds[i];
 
-        let userInfo = await this.mUserController.getUserInfoById(memberId);
+        let userInfo = await this.userController.getUserInfoById(memberId);
 
         // update member info
         let member = new User(memberId, userInfo['phonenumber']);

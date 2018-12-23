@@ -1,17 +1,17 @@
 <ion-header class="m-header aw-header">
 
-    <ion-toolbar>
-      <ion-buttons left>
-        <button ion-button (click)="onClickClose()">
-          <ion-icon name="ios-arrow-back-outline"></ion-icon>
-        </button>
-      </ion-buttons>
-      <ion-title (click)="onClickTitle()">
-        {{ mTexts.title }}
-      </ion-title>
-    </ion-toolbar>
-  
-  </ion-header>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button (click)="onClickClose()">
+        <ion-icon name="ios-arrow-back-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title (click)="onClickTitle()">
+      {{ mTexts.title }}
+    </ion-title>
+  </ion-toolbar>
+
+</ion-header>
 
 
 <ion-content padding>
@@ -24,11 +24,13 @@
       <div class="item-title">
         <span>Tùy chỉnh</span>
       </div>
-      <div class="inner-item">
-        <span>Chia sẻ vị trí</span>
-      </div>
-      <div class="inner-item">
-        <span>Chia sẻ lịch sử di chuyển</span>
+      <div class="member-item a3-container a3-items-center" (click)="onClickMovesSetting()">
+        <div class="member-avatar a3-container-center">
+          <ion-icon class="add-member-icon" name="ios-bicycle-outline"></ion-icon>
+        </div>
+        <div class="member-name">
+          Gia hạn quyền xem lộ trình di chuyển
+        </div>
       </div>
     </div>
     <div class="content-item">
@@ -45,10 +47,10 @@
           Thêm thành viên
         </div>
       </div>
-      <div class="member-item a3-container a3-items-center" *ngFor="let member of mDatas.circleMembers">
+      <div class="member-item a3-container a3-items-center" *ngFor="let member of mDatas.circleMembers" (click)="onClickMember(member)">
         <div class="member-avatar" [ngStyle]="{'background-image': 'url('+member.avatar+')'}"></div>
         <div class="member-name a3-flex-1">{{ member.name }}</div>
-        <div class="member-more a3-container" *ngIf="!isAdmin(member)" (click)="onClickMemberMore($event, member)">
+        <div class="member-more a3-container" *ngIf="!isAdmin(member) && isAdmin(owner)" (click)="onClickMemberMore($event, member)">
           <ion-icon name="ios-more-outline"></ion-icon>
         </div>
         <div class="admin-text a3-container" *ngIf="isAdmin(member)">
@@ -58,6 +60,11 @@
     </div>
   </div>
 
+  <div class="a3-container-center a1-margin-top">
+    <div class="pink-btn next-btn a1-width-100" (click)="onClickLeave()">
+      <span>Rời vòng kết nối</span>
+    </div>
+  </div>
 </ion-content>
 
 <aw-loading *ngIf="mDatas.onLoading"></aw-loading>
