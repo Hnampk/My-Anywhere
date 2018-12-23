@@ -15,6 +15,7 @@ import { EthersProvider } from '../../providers/ethers/ethers';
 import { Storage } from '@ionic/storage';
 import { Route } from '../../providers/models/route';
 import { Utils } from '../../providers/app-utils';
+import { AlertController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -73,6 +74,7 @@ export class HomePage {
     private ethersProvider: EthersProvider,
     private mAuthenticationProvider: AuthenticationProvider,
     private appController: AppController,
+    private alertController: AlertController,
     private backgroundProvider: BackgroundProvider,
     private userController: UserController,
     private mCircleController: CircleController,
@@ -80,7 +82,8 @@ export class HomePage {
     private socketProvider: SocketProvider,
     public navParams: NavParams) {
     menu.enable(true);
-    ethersProvider.createWallet("rose suit over suffer bubble cinnamon gossip simple wink way sock cloud");
+    // this.createWallet();
+    // this.ethersProvider.createWallet("rose suit over suffer bubble cinnamon gossip simple wink way sock cloud");
   }
 
   ngOnInit() {
@@ -237,10 +240,16 @@ export class HomePage {
 
       this.map = GoogleMaps.create(mapElement, mapOption);
 
-      this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+      this.map.one(GoogleMapsEvent.MAP_READY).then(async () => {
+        let isSavingMoves = await this.storage.get("is-saving-moves-" + this.userController.getOwner().id);
+        console.log(isSavingMoves);
+
         setTimeout(() => {
           this.backgroundProvider.startWatchPosition();
-          this.tracesProvider.startTrace();
+
+          if (isSavingMoves) {
+            this.tracesProvider.startTrace();
+          }
         }, 2000);
         this.hideLoading();
         console.log("map is ready");
@@ -317,16 +326,45 @@ export class HomePage {
   }
 
   onClickViewDetail() {
-    if (this.mDatas.circleMembers.length > 0) {
-      this.mDatas.memberDetail = this.mDatas.circleMembers[0];
-      let dateStr = this.mDatas.currentDateView.toLocaleDateString().split("/").join("");
-      this.getMemberTrace("0xd5F38EDc368B04bCC7E1ed15dc17aC781b79D47A", dateStr);
+    if (this.ethersProvider.hasWallet()) {
+      if (this.mDatas.circleMembers.length > 0) {
+        this.mDatas.memberDetail = this.mDatas.circleMembers[0];
+
+        if (this.mDatas.memberDetail.walletAddress) {
+          let dateStr = this.mDatas.currentDateView.toLocaleDateString().split("/").join("");
+          this.getMemberTrace(this.mDatas.memberDetail.walletAddress, dateStr);
+        }
+      }
+      this.hideMembersOnMap();
+      this.showMembersBar();
+      this.onChangePageView();
+      this.menu.enable(false);
     }
-    this.hideMembersOnMap();
-    this.showMembersBar();
-    this.onChangePageView();
-    this.menu.enable(false);
+    else {
+      // Did not create wallet => notice
+      const confirm = this.alertController.create({
+        title: 'Thêm Địa chỉ ví',
+        message: 'Tài khoản của bạn phải liên kết với một ví Ethereum để có thể sử dụng tính năng này! (Menu/Ghi lại lịch sử di chuyển)',
+        buttons: [
+          {
+            text: 'Đã rõ',
+            handler: () => {
+              // console.log('Disagree clicked');
+            }
+          },
+          {
+            text: 'Thêm',
+            handler: () => {
+              this.navCtrl.push("SaveMovesPage", { animation: 'ios' });
+              // console.log('Agree clicked');
+            }
+          }
+        ]
+      });
+      confirm.present();
+    }
   }
+
 
   hideMembersOnMap() {
     this.mDatas.circleMembers.forEach((member: User) => {
@@ -337,28 +375,30 @@ export class HomePage {
   }
 
   getMemberTrace(address: string, dateStr: string) {
+    console.log("address", address, this.userController.getOwner().walletAddress);
     console.log("dateStr", dateStr);
     this.showLoading();
     this.mDatas.currentTrace = [];
 
     this.hideRouteOnMap().then(async () => {
-      console.log("hideRouteOnMap!!")
       // if (member.isPublic) {
 
-      let tempTrace = await this.tracesProvider.getTrace(address, dateStr);
-
-      for (let i = 0; i < tempTrace.length; i++) {
-        let step = tempTrace[i];
-
-        this.mDatas.currentTrace.push(step);
-
-      }
-
-      if (this.mDatas.currentTrace.length > 0) {
-        this.showRouteOnMap(this.mDatas.currentTrace, true);
-        let lastestStep = this.mDatas.currentTrace[this.mDatas.currentTrace.length - 1];
-
-        Utils.animateCameraTo(this.map, new LatLng(lastestStep.lat, lastestStep.lng), 1000)
+      if (address) {
+        let tempTrace = await this.tracesProvider.getTrace(address, dateStr);
+  
+        for (let i = 0; i < tempTrace.length; i++) {
+          let step = tempTrace[i];
+  
+          this.mDatas.currentTrace.push(step);
+  
+        }
+  
+        if (this.mDatas.currentTrace.length > 0) {
+          this.showRouteOnMap(this.mDatas.currentTrace, true);
+          let lastestStep = this.mDatas.currentTrace[this.mDatas.currentTrace.length - 1];
+  
+          Utils.animateCameraTo(this.map, new LatLng(lastestStep.lat, lastestStep.lng), 1000)
+        }
       }
 
       this.hideLoading();
@@ -500,7 +540,7 @@ export class HomePage {
 
   onClickChangeMemberDetail(member: User) {
     this.mDatas.memberDetail = member;
-    // this.getMemberTrace(this.mDatas.memberDetail);
+    this.getMemberTrace(this.mDatas.memberDetail.walletAddress, this.mDatas.currentDateView.toLocaleDateString().split("/").join(""));
   }
 
   onUpdateCircleData(circle: Circle) {
@@ -592,7 +632,7 @@ export class HomePage {
 
     this.mDatas.isShowingDatePicker = false;
     this.mDatas.currentDateView = new Date(data['year'], data['month'] - 1, data['date']);
-    this.getMemberTrace("0xd5F38EDc368B04bCC7E1ed15dc17aC781b79D47A", this.mDatas.currentDateView.toLocaleDateString().split("/").join(""));
+    this.getMemberTrace(this.mDatas.memberDetail.walletAddress, this.mDatas.currentDateView.toLocaleDateString().split("/").join(""));
     this.menu.enable(true);
   }
 

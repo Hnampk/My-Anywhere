@@ -1,0 +1,48 @@
+<ion-header class="m-header aw-header">
+
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button (click)="onClickClose()">
+        <ion-icon name="ios-arrow-back-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title (click)="onClickTitle()">
+      {{ mTexts.title }}
+    </ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content padding>
+
+  <div class="main-content">
+    <div class="wallet-data" *ngIf="mDatas.confirmed">
+      <div class="save-password a1-margin-bottom a3-container a3-items-center" (click)="onClickSaveMoves()">
+        <div class="save-checkbox">
+          <ion-icon *ngIf="mDatas.isSavingMoves" name="aw-done-check"></ion-icon>
+        </div>
+        <div class="text ">{{mTexts.saveMoves}}</div>
+      </div>
+      <div class="field-title" (click)="onClickEditMnemonic()">
+        <span>Mnemonic</span>
+        <span class="edit-icon">
+          <ion-icon name="md-create"></ion-icon>
+        </span>
+      </div>
+      <div class="a1-margin-bottom" style="text-align: center">
+        <span>{{mDatas.mnemonic}}</span>
+      </div>
+      <div class="field-title">Wallet Address</div>
+      <div class="a1-margin-bottom">{{mDatas.walletAddress}}</div>
+    </div>
+
+    <div class="a3-container-center" *ngIf="!mDatas.confirmed">
+      <div class="blue-btn next-btn" style="padding: 10px 30px; text-align: center" (click)="onClickLinkWallet()">
+        <span>{{mTexts.linkWallet}}</span>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

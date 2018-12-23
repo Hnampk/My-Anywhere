@@ -140,6 +140,26 @@ export class UserController {
     });
   }
 
+  updateWalletAddress(walletAddress: string){
+    return new Promise((res, rej)=>{
+
+      let reqBody = {
+        wallet_address: walletAddress
+      }
+
+      this.http.patch(this.serviceUrl + AnywhereRouter.UPDATE_WALLET_ADDRESS + this.owner.id, reqBody)
+        .subscribe(response => {
+          this.owner.walletAddress = walletAddress;
+
+          res();
+        }, error => {
+          console.log(error);
+          this.mAppcontroller.onConnectionFailure();
+          rej();
+        });
+    });
+  }
+
   /**
    * Update user's info: Display name
    * @param name 

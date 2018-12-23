@@ -1,3 +1,4 @@
+import { UserController } from './../../providers/user-controller/user-controller';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { AccountValidators } from './../../validators/account.validators';
@@ -8,6 +9,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { TracesProvider } from '../../providers/traces/traces';
 import { EthersProvider } from '../../providers/ethers/ethers';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -42,6 +44,10 @@ export class LoginPage {
     private mAppController: AppController,
     private mAuthenticationProvider: AuthenticationProvider,
     private mCircleController: CircleController,
+    private storage: Storage,
+    private userController: UserController,
+    private ethersProvider: EthersProvider,
+    private appController: AppController,
     private mMenuController: MenuController) {
   }
 
@@ -51,7 +57,7 @@ export class LoginPage {
 
   // async onClickTitle() {
   //   let result = await this.tracesProvider.getTrace("0xd5f38edc368b04bcc7e1ed15dc17ac781b79d47a", "11282018");
-    
+
   //   result.map(element => {
   //     console.log(new Date(element.time))
   //   });
@@ -98,6 +104,13 @@ export class LoginPage {
 
         await this.navCtrl.setRoot("HomePage");
 
+        this.storage.set("password", this.appController.md5Hash(password));
+
+        if (this.mDatas.isSavingPassword) {
+          this.storage.set("auto-login", true);
+        }
+
+        this.tryToCreateWallet();
         this.mAppController.showToast("Đăng nhập thành công!");
         // if (!this.mAuthenticationProvider.hasAddress()) {
         //   this.navCtrl.setRoot("UpdateAddressPage");
@@ -118,6 +131,21 @@ export class LoginPage {
       else if (this.password.errors) {
         this.mAppController.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự!");
       }
+    }
+  }
+
+  /**
+   * Try to get the mnemonic in local storage.
+   * If it exists, create wallet.
+   */
+  async tryToCreateWallet() {
+    let encryptedMnemonic: string = await this.storage.get("mnemonic-" + this.userController.getOwner().id);
+
+    if (encryptedMnemonic && encryptedMnemonic.length > 0) {
+      let mnemonic = this.appController.decrypt(encryptedMnemonic);
+
+      await this.ethersProvider.createWallet(mnemonic);
+      await this.userController.updateWalletAddress(this.ethersProvider.getWalletAddress());
     }
   }
 }

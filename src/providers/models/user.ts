@@ -10,6 +10,8 @@ export class User {
     lastestLocation: Location;
     marker: Marker;
     isOnline: boolean = false;
+    walletAddress: string = "";
+    password: string = "";
 
     constructor(private _id: string, private _phonenumber: string) { }
 
@@ -46,6 +48,10 @@ export class User {
             this.lastestLocation = new Location(data.lastest_location._lat, data.lastest_location._lng, data.lastest_location._address);
             this.lastestLocation.setTime(data.lastest_location.time);
         }
+
+        if(data.wallet_address){
+            this.walletAddress = data.wallet_address;
+        }
     }
 
     updateLastestLocation(location: Location) {
@@ -55,6 +61,10 @@ export class User {
 
         this.lastestLocation.update(location);
         this.updateMarkerPosition();
+    }
+
+    setPassword(password: string){
+        this.password = password;
     }
 
     // Google Maps

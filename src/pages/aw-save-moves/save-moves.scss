@@ -1,0 +1,55 @@
+page-save-moves {
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    ion-content {
+        background-color: #F8F8F8 !important;
+    }
+    .main-content {
+        padding: 20px 16px;
+        background-color: white;
+        border-radius: 20px;
+        border: 1px solid #D6D6D6;
+    }
+    .save-password {
+        .save-checkbox {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            border: 1px solid #D6D6D6;
+            text-align: right;
+            ion-icon {
+                margin-right: -1px;
+                color: #F34E88;
+                font-size: .8em;
+                width: 100%;
+            }
+        }
+        .text {
+            margin-left: 10px;
+            font-size: .8em;
+        }
+    }
+    .wallet-data{
+
+    }
+    .field-title{
+        font-size: 1.4em;
+        padding: 0 70px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .edit-icon{
+        font-size: .8em;
+        color: #47B1FF;
+    }
+}

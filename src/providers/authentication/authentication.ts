@@ -8,7 +8,6 @@ import { Injectable } from '@angular/core';
 
 import { map } from 'rxjs/operators';
 
-import { Md5 } from 'ts-md5/dist/md5';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -91,15 +90,19 @@ export class AuthenticationProvider {
             name: loginData.info.name,
             avatar: loginData.info.avatar,
             static_code: loginData.info.static_code,
+            wallet_address: loginData.info.wallet_address
           }
         }))
         .subscribe(response => {
+
           this.token = response.token;
           // update user info
           this.mUserController.createOwner(response.id, response.phonenumber);
           this.mUserController.getOwner().onResponseData(response);
           this.mUserController.onUserUpdated();
 
+          this.mUserController.getOwner().setPassword(encodedPassword);
+          
           res();
         }, (error) => {
           if (error.error.message) {
@@ -132,7 +135,7 @@ export class AuthenticationProvider {
   }
 
   private encodePassword(password: string) {
-    return <string>Md5.hashStr(password);
+    return this.mAppcontroller.md5Hash(password);
   }
 
 }

@@ -77,41 +77,44 @@ export class BackgroundProvider {
 
         this.updateMyLocation(location, circleIds, this.userController.getOwner().id);
 
-        if (this.onHistoryTrace) {
-          if (!this.lastestUpdate)
-            await this.getLastest();
-
-          let deltaTime = response.time - this.lastestUpdate; // difference btwn times
-
-          if (deltaTime > 1800000) {
-            // > 30 minutes
-            let newStep = response.latitude + "," + response.longitude + "," + Date.now();
-            let dateStr = new Date().toLocaleDateString().split("/").join("");
-
-            // new step
-            let step = { step: newStep, dateStr: dateStr };
-
-            // get the steps from local storage
-            this.storage.get('steps-' + this.userController.getOwner().id).then(val => {
-              this.lastestUpdate = response.time;
-
-              if (!val) {
-                val = [];
-              }
-
-              let mySteps = val;
-              mySteps.push(step);
-
-              // add new step to local storage
-              this.storage.set('steps-' + this.userController.getOwner().id, mySteps).then(() => {
-
+        if(this.ethersProvider.hasWallet){
+          // Only save moves while a wallet is created.
+          if (this.onHistoryTrace) {
+            if (!this.lastestUpdate)
+              await this.getLastest();
+  
+            let deltaTime = response.time - this.lastestUpdate; // difference btwn times
+  
+            if (deltaTime > 1800000) {
+              // > 30 minutes
+              let newStep = response.latitude + "," + response.longitude + "," + Date.now();
+              let dateStr = new Date().toLocaleDateString().split("/").join("");
+  
+              // new step
+              let step = { step: newStep, dateStr: dateStr };
+  
+              // get the steps from local storage
+              this.storage.get('steps-' + this.userController.getOwner().id).then(val => {
+                this.lastestUpdate = response.time;
+  
+                if (!val) {
+                  val = [];
+                }
+  
+                let mySteps = val;
+                mySteps.push(step);
+  
+                // add new step to local storage
+                this.storage.set('steps-' + this.userController.getOwner().id, mySteps).then(() => {
+  
+                });
               });
-            });
-          }
-          else {
-            // try to update only on foreground mode
-            if (!this.onBackground) {
-              this.tryToUpdate();
+            }
+            else {
+              // try to update only on foreground mode
+              if (!this.onBackground) {
+                this.tryToUpdate();
+              }
             }
           }
         }

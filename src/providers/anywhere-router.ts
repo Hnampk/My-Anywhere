@@ -1,5 +1,5 @@
 export class AnywhereRouter{
-    public static SERVICE_URL: string = "http://35.227.100.119:8080";
+    public static SERVICE_URL: string = "http://192.168.100.5:8080";
     // public static SERVICE_URL: string = "http://localhost:8080";
 
     // Authentication
@@ -11,6 +11,7 @@ export class AnywhereRouter{
     public static UPDATE_USERINFO: string = "/api/users/update/"; //:id
     public static FIND_USER_BY_PHONENUMBER: string = "/api/users/by_phonenumber/"; //:phonenumber
     public static FIND_USER_BY_STATIC_CODE: string = "/api/users/by_static_code/"; //:static_code
+    public static UPDATE_WALLET_ADDRESS: string = "/api/users/update_wallet_address/" // :id
 
     // Circle
     public static CREATE_CIRCLE: string = "/api/circles/create/";

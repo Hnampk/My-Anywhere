@@ -1,7 +1,8 @@
+import { ToastController } from 'ionic-angular';
 import { MapProvider } from './../map/map';
 import { Injectable } from '@angular/core';
 
-import { ethers } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import { Location } from '../models/location';
 
 @Injectable()
@@ -14,13 +15,22 @@ export class EthersProvider {
   private wallet;
   private contract;
   private contractWithSigner;
+  private mnemonic = null;
 
-  constructor(private mapProvider: MapProvider) {
+  constructor(private mapProvider: MapProvider, private toastController:  ToastController) {
 
   }
 
   getWallet() {
     return this.wallet;
+  }
+
+  getMnemonic() {
+    return this.mnemonic;
+  }
+
+  getWalletAddress() {
+    return this.wallet.address;
   }
 
   async initProvider() {
@@ -32,14 +42,25 @@ export class EthersProvider {
     this.contract = await new ethers.Contract(contractAddress, abi, this.provider);
   }
 
+  hasWallet() {
+    console.log(this.mnemonic != null)
+    return this.mnemonic != null;
+  }
+
+  /**
+   * Create Ethereum wallet to interact with smartcontract
+   * @param mnemonic 
+   */
   async createWallet(mnemonic: string) {
     await this.initProvider();
 
-    let Mnemonicwallet = ethers.Wallet.fromMnemonic(mnemonic);
-    let privateKey = await Mnemonicwallet.privateKey;
+    let mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
+    let privateKey = await mnemonicWallet.privateKey;
 
     this.wallet = new ethers.Wallet(privateKey, this.provider);
     this.contractWithSigner = this.contract.connect(this.wallet);
+
+    this.mnemonic = mnemonic;
   }
 
   /**
@@ -76,8 +97,20 @@ export class EthersProvider {
     let steps: Array<Location> = [];
 
     for (let i = 0; i < value; i++) {
-      let stepResult: string = await this.getStep(address, date, i);
+      let stepResult: string = "";
+      try {
+        stepResult = await this.getStep(address, date, i);
+      }
+      catch (e) {
 
+        let toast = this.toastController.create({
+          message: e,
+          duration: 2000
+        });
+
+        toast.present();
+        break;
+      }
       // the stepResult looks like: "20.9925054,105.8436936,1543244179496" = lat,lng,time
       // => split by "," => ["20.9925054", "105.8436936", "1543244179496"]
       let stepElements = stepResult.split(",");
@@ -98,8 +131,14 @@ export class EthersProvider {
     return steps;
   }
 
-  getStep(address: string, date: string, index: number) {
-    return this.contractWithSigner.getStep(address, date, index);
+  async getStep(address: string, date: string, index: number) {
+    try {
+      return await this.contractWithSigner.getStep(address, date, index);
+    }
+    catch (e) {
+      throw new Error("Không thể xem lịch sử của thành viên này!");
+    }
+    // return this.contractWithSigner.getStep(address, date, index);
   }
 
   /**

@@ -18,7 +18,7 @@ export class MyApp {
     circle: "Vòng kết nối",
     function: "Chức năng",
     new: "Thêm mới",
-    join: "Tham gia vòng kết nối mới",
+    saveMoves: "Ghi lại lịch sử di chuyển",
   }
 
   menuDatas = {
@@ -102,8 +102,8 @@ export class MyApp {
     this.menu.close();
   }
 
-  private onClickJoinCircle() {
-    // this.app.getRootNav().push("AwJoinCirclePage");
+  private onClickSaveMoves() {
+    this.app.getRootNav().push("SaveMovesPage", { animation: 'ios' });
     this.menu.close();
   }
 
