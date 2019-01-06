@@ -1,3 +1,4 @@
+import { MapProvider } from './../../providers/map/map';
 import { CircleController } from './../../providers/circle-controller/circle-controller';
 import { AppController } from './../../providers/app-controller/app-controller';
 import { UserController } from './../../providers/user-controller/user-controller';
@@ -48,9 +49,9 @@ export class AddMemberPage {
   resultMembers: Array<ResultMember> = [];
 
   constructor(public navCtrl: NavController,
-    private mUserController: UserController,
-    private mAppController: AppController,
-    private mCircleController: CircleController,
+    private userController: UserController,
+    private appController: AppController,
+    private circleController: CircleController,
     // private mAwModule: AwModule,
     public navParams: NavParams) {
     if (navParams.data['circle']) {
@@ -119,11 +120,11 @@ export class AddMemberPage {
     this.showLoading();
 
     try {
-      let users = await this.mUserController.findUsersByStaticCode(code) as Array<any>;
+      let users = await this.userController.findUsersByStaticCode(code) as Array<any>;
       console.log(users);
       this.onShowMembers(users);
     } catch (e) {
-      this.mAppController.showToast("Invalid code!");
+      this.appController.showToast("Invalid code!");
     }
 
     // console.log(user);
@@ -177,7 +178,14 @@ export class AddMemberPage {
 
     members.forEach(element => {
       let resultMember = new ResultMember(element._id, element.phonenumber);
-      resultMember.onResponseData(element);
+
+
+      let distanceOnKm = "";
+      if (resultMember.lastestLocation) {
+        distanceOnKm = (MapProvider.calculateDistance(this.userController.getOwner().lastestLocation.lat, this.userController.getOwner().lastestLocation.lng, resultMember.lastestLocation.lat, resultMember.lastestLocation.lng) * 1000).toFixed(2);
+      }
+
+      resultMember.onResponseData(element, distanceOnKm);
 
       let isMember = this.circle.getMembers().find(member => { return member.id == element._id });
 
@@ -194,10 +202,10 @@ export class AddMemberPage {
 
     // let member = new User()
     try {
-      await this.mCircleController.addMemberToCircle(this.circle, resultMember);
+      await this.circleController.addMemberToCircle(this.circle, resultMember);
       resultMember.status = MemberStatus.ADDED;
     } catch (e) {
-      this.mAppController.showToast("Xảy ra lỗi!");
+      this.appController.showToast("Xảy ra lỗi!");
       this.resultMembers = [];
       this.resetAll();
     }

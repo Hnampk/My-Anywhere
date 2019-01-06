@@ -100,7 +100,7 @@ export class SocketProvider {
   }
 
   updateMemberLocationEventReceived() {
-    return new Observable<{ from: string, location: Location, circle_id: string }>(observer => {
+    return new Observable<{ from: string, location: any, circle_id: string }>(observer => {
       this.socket.on('new-location', data => {
         observer.next(data);
       });

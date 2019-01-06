@@ -74,11 +74,11 @@ export class Circle {
         this.members.splice(index, 1);
     }
 
-    updateLocation(memberId: string, location: Location) {
+    updateLocation(memberId: string, location: Location, distanceOnMeters: string) {
         let member = this.members.find(member => { return member.id == memberId });
 
         if (member)
-            member.updateLastestLocation(location);
+            member.updateLastestLocation(location, distanceOnMeters);
     }
 
     hideMembersMarker() {

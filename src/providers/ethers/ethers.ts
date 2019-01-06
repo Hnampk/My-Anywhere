@@ -88,6 +88,8 @@ export class EthersProvider {
    * @param value the number of steps on that date, call 'getStepsValue' function to get it
    */
   async getStepsOnDate(address: string, date: string, value?: number | any) {
+    console.log("--------getStepsOnDate", address, date);
+    
     if (!value) {
       value = await this.getStepsValue(address, date);
       value = value.toNumber();

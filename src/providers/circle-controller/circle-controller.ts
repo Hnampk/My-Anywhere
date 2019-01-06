@@ -1,3 +1,4 @@
+import { MapProvider } from './../map/map';
 import { SocketProvider } from './../socket/socket';
 import { AnywhereRouter } from './../anywhere-router';
 import { User } from './../models/user';
@@ -6,8 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserController } from '../user-controller/user-controller';
 import { Events } from 'ionic-angular';
+import { Location } from '../models/location';
 
-import { map } from 'rxjs/operators';
 
 @Injectable()
 export class CircleController {
@@ -24,13 +25,15 @@ export class CircleController {
     private events: Events
   ) {
     this.socketProvider.updateMemberLocationEventReceived().subscribe(data => {
-      console.log("Received new member's location", data);
-
       let targetCircle = this.getCircleById(data.circle_id);
       let memberId = data.from;
       let newLocation = data.location;
 
-      targetCircle.updateLocation(memberId, newLocation);
+      let owner = userController.getOwner();
+      let distanceOnKm = MapProvider.calculateDistance(owner.lastestLocation.lat, owner.lastestLocation.lng, newLocation._lat, newLocation._lng);
+
+      targetCircle.updateLocation(memberId, newLocation, (distanceOnKm * 1000).toFixed(2));
+
     });
   }
 
@@ -296,12 +299,21 @@ export class CircleController {
       for (let i = 0; i < memberIds.length; i++) {
         let memberId = memberIds[i];
 
-        let userInfo = await this.userController.getUserInfoById(memberId);
+        let userInfo: any = await this.userController.getUserInfoById(memberId);
 
         // update member info
         let member = new User(memberId, userInfo['phonenumber']);
-        member.onResponseData(userInfo);
 
+        let distanceOnKm = "";
+        if (userInfo.lastest_location) {
+          let lastestLocation = new Location(userInfo.lastest_location._lat, userInfo.lastest_location._lng, userInfo.lastest_location._address);
+          lastestLocation.setTime(userInfo.lastest_location.time);
+
+          distanceOnKm = (MapProvider.calculateDistance(this.userController.getOwner().lastestLocation.lat, this.userController.getOwner().lastestLocation.lng, lastestLocation.lat, lastestLocation.lng) * 1000).toFixed(2);
+
+        }
+
+        member.onResponseData(userInfo, distanceOnKm);
         circle.addMember(member);
       }
       res();

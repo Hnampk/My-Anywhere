@@ -56,7 +56,10 @@
                                 </ion-col>
                             </ion-row>
                             <ion-row>
-                                <div class="location">{{ member.lastestLocation?.address }}</div>
+                                <div *ngIf="!mDatas.isShowingDistance || isOwner(member)" class="location">{{ member.lastestLocation?.address }}</div>
+                                <div *ngIf="mDatas.isShowingDistance && !isOwner(member)" class="location">
+                                    <span style="font-weight: bold">Khoảng cách:</span><span>{{ " " + member.distance + " m" }}</span>
+                                </div>
                             </ion-row>
                         </ion-col>
                     </ion-row>

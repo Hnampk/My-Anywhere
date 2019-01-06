@@ -16,6 +16,7 @@ import { Storage } from '@ionic/storage';
 import { Route } from '../../providers/models/route';
 import { Utils } from '../../providers/app-utils';
 import { AlertController } from 'ionic-angular';
+import { MapProvider } from '../../providers/map/map';
 
 @IonicPage()
 @Component({
@@ -44,6 +45,7 @@ export class HomePage {
     memberDetail: User,
     onLoading: boolean,
     isShowingDatePicker: boolean,
+    isShowingDistance: boolean,
     currentDateView: Date,
     currentTrace: Array<Location>,
     currentRoute: Polyline,
@@ -57,6 +59,7 @@ export class HomePage {
       memberDetail: null,
       onLoading: false,
       isShowingDatePicker: false,
+      isShowingDistance: false,
       currentDateView: new Date(),
       currentTrace: [],
       currentRoute: null,
@@ -242,7 +245,6 @@ export class HomePage {
 
       this.map.one(GoogleMapsEvent.MAP_READY).then(async () => {
         let isSavingMoves = await this.storage.get("is-saving-moves-" + this.userController.getOwner().id);
-        console.log(isSavingMoves);
 
         setTimeout(() => {
           this.backgroundProvider.startWatchPosition();
@@ -298,7 +300,7 @@ export class HomePage {
       }, {
         text: "Đo khoảng cách",
         handler: () => {
-
+          this.mDatas.isShowingDistance = !this.mDatas.isShowingDistance;
         }
       }, {
         text: "Quay lại",
@@ -321,6 +323,8 @@ export class HomePage {
 
   onClickViewDetail() {
     if (this.ethersProvider.hasWallet()) {
+      this.mDatas.currentDateView = new Date();
+
       if (this.mDatas.circleMembers.length > 0) {
         this.mDatas.memberDetail = this.mDatas.circleMembers[0];
 
@@ -605,10 +609,10 @@ export class HomePage {
 
   onClickChat() {
     // console.log("onClickChat");
-    this.storage.get("steps-" + this.userController.getOwner().id).then(data => {
-      console.log("steps: ", data);
+  }
 
-    });
+  isOwner(member: User){
+    return member.id == this.userController.getOwner().id;
   }
 
   onClickDatePicker() {

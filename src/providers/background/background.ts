@@ -9,7 +9,7 @@ import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { PowerManagement } from '@ionic-native/power-management';
 
-// import BackgroundGeolocation from 'cordova-plugin-mauron85-background-geolocation';
+import BackgroundGeolocation from 'cordova-plugin-mauron85-background-geolocation';
 import { Location } from '../models/location';
 
 @Injectable()
@@ -48,133 +48,137 @@ export class BackgroundProvider {
   }
 
   private configBackgroundGeolocation() {
-    // let config = {
-    //   locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-    //   desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-    //   stopOnTerminate: false,
-    //   // stationaryRadius: 50,
-    //   // distanceFilter: 50,
-    //   notificationTitle: 'Background tracking',
-    //   notificationText: 'enabled',
-    //   debug: false,
-    //   interval: 10000,
-    //   fastestInterval: 20000,
-    //   activitiesInterval: 10000,
-    //   stopOnStillActivity: false
-    // };
+    let config = {
+      locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
+      desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
+      stopOnTerminate: false,
+      // stationaryRadius: 50,
+      // distanceFilter: 50,
+      notificationTitle: 'Background tracking',
+      notificationText: 'enabled',
+      debug: false,
+      interval: 10000,
+      fastestInterval: 20000,
+      activitiesInterval: 10000,
+      stopOnStillActivity: false
+    };
 
-    // BackgroundGeolocation.configure(config);
+    BackgroundGeolocation.configure(config);
 
-    // BackgroundGeolocation.on('location', async (response) => {
-    //   // handle your locations here
-    //   // to perform long running operation on iOS
-    //   // you need to create background task
-    //   BackgroundGeolocation.startTask(async (taskKey) => {
-    //     let address = await this.mapProvider.requestAddressHttp({ lat: response.latitude, lng: response.longitude });
-    //     let location = new Location(response.latitude, response.longitude, address ? address : "");
-    //     location.setTime(response.time);
-    //     let circleIds = this.circleController.getCircles().map(circle => { return circle.id });
+    BackgroundGeolocation.on('location', async (response) => {
+      // handle your locations here
+      // to perform long running operation on iOS
+      // you need to create background task
+      BackgroundGeolocation.startTask(async (taskKey) => {
+        let address = await this.mapProvider.requestAddressHttp({ lat: response.latitude, lng: response.longitude });
+        let location = new Location(response.latitude, response.longitude, address ? address : "");
+        location.setTime(response.time);
+        let circleIds = this.circleController.getCircles().map(circle => { return circle.id });
 
-    //     this.updateMyLocation(location, circleIds, this.userController.getOwner().id);
+        this.updateMyLocation(location, circleIds, this.userController.getOwner().id);
+        
+        if (!this.onBackground) {
+          this.userController.getOwner().updateLastestLocation(location);
+        }
 
-    //     if(this.ethersProvider.hasWallet){
-    //       // Only save moves while a wallet is created.
-    //       if (this.onHistoryTrace) {
-    //         if (!this.lastestUpdate)
-    //           await this.getLastest();
+        if(this.ethersProvider.hasWallet){
+          // Only save moves while a wallet is created.
+          if (this.onHistoryTrace) {
+            if (!this.lastestUpdate)
+              await this.getLastest();
   
-    //         let deltaTime = response.time - this.lastestUpdate; // difference btwn times
+            let deltaTime = response.time - this.lastestUpdate; // difference btwn times
   
-    //         if (deltaTime > 1800000) {
-    //           // > 30 minutes
-    //           let newStep = response.latitude + "," + response.longitude + "," + Date.now();
-    //           let dateStr = new Date().toLocaleDateString().split("/").join("");
+            if (deltaTime > 1800000) {
+              // > 30 minutes
+              let newStep = response.latitude + "," + response.longitude + "," + Date.now();
+              let dateStr = new Date().toLocaleDateString().split("/").join("");
   
-    //           // new step
-    //           let step = { step: newStep, dateStr: dateStr };
+              // new step
+              let step = { step: newStep, dateStr: dateStr };
   
-    //           // get the steps from local storage
-    //           this.storage.get('steps-' + this.userController.getOwner().id).then(val => {
-    //             this.lastestUpdate = response.time;
+              // get the steps from local storage
+              this.storage.get('steps-' + this.userController.getOwner().id).then(val => {
+                this.lastestUpdate = response.time;
   
-    //             if (!val) {
-    //               val = [];
-    //             }
+                if (!val) {
+                  val = [];
+                }
   
-    //             let mySteps = val;
-    //             mySteps.push(step);
+                let mySteps = val;
+                mySteps.push(step);
   
-    //             // add new step to local storage
-    //             this.storage.set('steps-' + this.userController.getOwner().id, mySteps).then(() => {
+                // add new step to local storage
+                this.storage.set('steps-' + this.userController.getOwner().id, mySteps).then(() => {
   
-    //             });
-    //           });
-    //         }
-    //         else {
-    //           // try to update only on foreground mode
-    //           if (!this.onBackground) {
-    //             this.tryToUpdate();
-    //           }
-    //         }
-    //       }
-    //     }
-    //     // execute long running task
-    //     // eg. ajax post location
-    //     // IMPORTANT: task has to be ended by endTask
-    //     BackgroundGeolocation.endTask(taskKey);
-    //   });
-    // });
+                });
+              });
+            }
+            else {
+              // try to update only on foreground mode
+              if (!this.onBackground) {
+                this.tryToUpdate();
+              }
+            }
+          }
+        }
+        // execute long running task
+        // eg. ajax post location
+        // IMPORTANT: task has to be ended by endTask
+        BackgroundGeolocation.endTask(taskKey);
+      });
+    });
 
-    // BackgroundGeolocation.on('start', () => {
-    //   this.circleController.joinCurrentCircleRoom();
+    BackgroundGeolocation.on('start', () => {
+      this.circleController.joinCurrentCircleRoom();
 
-    //   console.log('[INFO] BackgroundGeolocation service has been started');
-    // });
+      console.log('[INFO] BackgroundGeolocation service has been started');
+    });
 
-    // BackgroundGeolocation.on('stop', () => {
-    //   this.circleController.leaveCurrentCircleRoom();
-    //   console.log('[INFO] BackgroundGeolocation service has been stopped');
-    // });
+    BackgroundGeolocation.on('stop', () => {
+      this.circleController.leaveCurrentCircleRoom();
+      console.log('[INFO] BackgroundGeolocation service has been stopped');
+    });
 
-    // BackgroundGeolocation.on('error', (error) => {
-    //   console.log("ERROR", error)
-    // });
+    BackgroundGeolocation.on('error', (error) => {
+      console.log("ERROR", error)
+    });
 
-    // BackgroundGeolocation.on('background', () => {
-    //   this.powerManagement.dim().then(() => {
-    //     console.log('enablebackground: Wakelock acquired');
-    //     this.powerManagement.setReleaseOnPause(false).then(() => {
-    //       console.log('enablebackground: setReleaseOnPause success');
-    //     }).catch(error => {
-    //       console.log('enablebackground: setReleaseOnPause Failed to set');
-    //     });
-    //   }).catch(error => {
-    //     console.log('enablebackground: Failed to acquire wakelock');
-    //   });
+    BackgroundGeolocation.on('background', () => {
+      this.powerManagement.dim().then(() => {
+        console.log('enablebackground: Wakelock acquired');
+        this.powerManagement.setReleaseOnPause(false).then(() => {
+          console.log('enablebackground: setReleaseOnPause success');
+        }).catch(error => {
+          console.log('enablebackground: setReleaseOnPause Failed to set');
+        });
+      }).catch(error => {
+        console.log('enablebackground: Failed to acquire wakelock');
+      });
 
-    //   this.onBackground = true;
-    //   this.circleController.leaveCurrentCircleRoom();
+      this.onBackground = true;
+      this.circleController.leaveCurrentCircleRoom();
 
-    //   console.log('[INFO] App is in background', this.onBackground);
-    //   // you can also reconfigure service (changes will be applied immediately)
-    //   // BackgroundGeolocation.configure({ debug: true });
-    // });
+      console.log('[INFO] App is in background', this.onBackground);
+      // you can also reconfigure service (changes will be applied immediately)
+      // BackgroundGeolocation.configure({ debug: true });
+    });
 
-    // BackgroundGeolocation.on('foreground', () => {
-    //   this.powerManagement.release().then(() => {
-    //     console.log('disableBackground: Wakelock released');
-    //   }).catch((error) => {
-    //     console.log('disableBackground: Failed to release wakelock');
-    //   });
+    BackgroundGeolocation.on('foreground', () => {
+      this.powerManagement.release().then(() => {
+        console.log('disableBackground: Wakelock released');
+      }).catch((error) => {
+        console.log('disableBackground: Failed to release wakelock');
+      });
 
-    //   this.onBackground = false;
-    //   // this.circleController.joinAllCircleRooms();
-    //   this.circleController.joinCurrentCircleRoom();
+      this.onBackground = false;
+      // this.circleController.joinAllCircleRooms();
+      this.circleController.joinCurrentCircleRoom();
 
-    //   console.log('[INFO] App is in foreground', this.onBackground);
+      console.log('[INFO] App is in foreground', this.onBackground);
 
-    //   BackgroundGeolocation.configure({ debug: false });
-    // });
+      BackgroundGeolocation.configure({ debug: false });
+    });
   }
 
   private tryToUpdate() {
@@ -320,11 +324,11 @@ export class BackgroundProvider {
   }
 
   startWatchPosition() {
-    // BackgroundGeolocation.start();
+    BackgroundGeolocation.start();
   }
 
   stopWatchPosition() {
-    // BackgroundGeolocation.stop();
+    BackgroundGeolocation.stop();
     
       this.powerManagement.release().then(() => {
         console.log('disableBackground: Wakelock released');

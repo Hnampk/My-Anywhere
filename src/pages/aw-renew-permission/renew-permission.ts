@@ -73,8 +73,10 @@ export class RenewPermissionPage {
   }
 
   onClickMember(member: PrivateMember){
-    this.mDatas.isShowingDatePicker = true;
-    this.mDatas.onChoseMember = member;
+    if(member.info.id != this.userController.getOwner().id){
+      this.mDatas.isShowingDatePicker = true;
+      this.mDatas.onChoseMember = member;
+    }
   }
 
   onDatePickerChanged(data) {

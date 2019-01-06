@@ -17,7 +17,7 @@
 
   <div class="content-container">
     <ion-grid padding>
-      <ion-row *ngFor="let member of mDatas.members" (click)="onClickMember(member)">
+      <ion-row class="a1-margin-bottom" *ngFor="let member of mDatas.members" (click)="onClickMember(member)">
         <ion-col>{{member.info.name}}</ion-col>
         <ion-col col-4>{{(member.expirationTime!=0)?(member.expirationTime | date:'mediumDate'):""}}</ion-col>
       </ion-row>

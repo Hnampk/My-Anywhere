@@ -35,6 +35,7 @@ export class TracesProvider {
   }
 
   async getTrace(address: string, dateStr: string) {
+    console.log("------getTrace", address, dateStr)
     let numberOfSteps = 0
 
     if (this.traces.get(address) && this.traces.get(address).get(dateStr)) {

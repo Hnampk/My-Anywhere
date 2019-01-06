@@ -51,7 +51,7 @@ export class AuthenticationProvider {
         .subscribe(response => {
           this.token = response.token;
           this.mUserController.createOwner(response.id, response.phonenumber);
-          this.mUserController.getOwner().onResponseData(response);;
+          this.mUserController.getOwner().onResponseData(response, "");;
 
           console.log(this.mUserController.getOwner());
           this.mUserController.onUserUpdated();
@@ -90,7 +90,8 @@ export class AuthenticationProvider {
             name: loginData.info.name,
             avatar: loginData.info.avatar,
             static_code: loginData.info.static_code,
-            wallet_address: loginData.info.wallet_address
+            wallet_address: loginData.info.wallet_address,
+            lastest_location: loginData.info.lastest_location
           }
         }))
         .subscribe(response => {
@@ -98,11 +99,11 @@ export class AuthenticationProvider {
           this.token = response.token;
           // update user info
           this.mUserController.createOwner(response.id, response.phonenumber);
-          this.mUserController.getOwner().onResponseData(response);
+          this.mUserController.getOwner().onResponseData(response, "");
           this.mUserController.onUserUpdated();
 
           this.mUserController.getOwner().setPassword(encodedPassword);
-          
+          this.mUserController.getOwner().updateLastestLocation(response.lastest_location);
           res();
         }, (error) => {
           if (error.error.message) {

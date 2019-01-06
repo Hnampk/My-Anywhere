@@ -12,6 +12,7 @@ export class User {
     isOnline: boolean = false;
     walletAddress: string = "";
     password: string = "";
+    distance: string = "";
 
     constructor(private _id: string, private _phonenumber: string) { }
 
@@ -23,7 +24,7 @@ export class User {
         return this._phonenumber;
     }
 
-    onResponseData(data) {
+    onResponseData(data, distance: string) {
         if (data.name) {
             this.name = data.name;
         }
@@ -52,13 +53,18 @@ export class User {
         if(data.wallet_address){
             this.walletAddress = data.wallet_address;
         }
+
+        if(distance){
+            this.distance = distance;
+        }
     }
 
-    updateLastestLocation(location: Location) {
+    updateLastestLocation(location: Location, distanceOnMeters?: string) {
         if (!this.lastestLocation) {
             this.lastestLocation = new Location(null, null, null);
         }
 
+        this.distance = distanceOnMeters;
         this.lastestLocation.update(location);
         this.updateMarkerPosition();
     }
